@@ -37,6 +37,13 @@ func TestExpressions(t *testing.T) {
 		{[]ExpValue{{"nested__foo___array___path__a", "x"}, {"nested__foo___array___path__b", "y"}}, `{"nested":{"foo":[{"a":"x"},{"b":"y"}]}}`},
 		{[]ExpValue{{"nested__foo___array___path__a", "x"}, {"nested__foo___path__b", "y"}}, `{"nested":{"foo":[{"a":"x","b":"y"}]}}`},
 		{[]ExpValue{{"nested__foo___path__b", "y"}, {"nested__foo___array___path__a", "x"}}, `{"nested":{"foo":[{"a":"x","b":"y"}]}}`},
+		{[]ExpValue{{"foo", "x"}, {"foo___array___optional", ""}}, `{"foo":["x"]}`},
+		{[]ExpValue{{"foo", "x"}, {"foo___array___int", "1"}}, `{"foo":["x",1]}`},
+		{[]ExpValue{{"foo___array___int", "1"}, {"foo", "x"}}, `{"foo":[1,"x"]}`},
+		{[]ExpValue{{"foo__bar", "x"}, {"foo___array___int", "1"}}, `foo: type mismatch`},
+		{[]ExpValue{{"foo__bar", "x"}, {"foo___int", "1"}}, `foo: type mismatch`},
+		{[]ExpValue{{"foo___array___optional", ""}, {"foo", "x"}}, `{"foo":["x"]}`},
+		{[]ExpValue{{"foo___array___int", "1"}, {"foo__bar", "x"}}, `foo: type mismatch`},
 	}
 
 	for i, tt := range tests {
