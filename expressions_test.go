@@ -24,7 +24,8 @@ func TestExpressions(t *testing.T) {
 		{[]ExpValue{{"nested__foo", "x"}, {"nested__bar", "y"}}, `{"nested":{"bar":"y","foo":"x"}}`},
 		{[]ExpValue{{"nested__foo", "x"}, {"nested__foo", "y"}}, `nested__foo: value already exist`},
 		{[]ExpValue{{"foo___array", "x"}, {"foo___array", "y"}}, `{"foo":["x","y"]}`},
-		{[]ExpValue{{"foo___array", "x"}, {"foo", "y"}}, `foo: type mismatch`},
+		{[]ExpValue{{"foo___array", "x"}, {"foo", "y"}}, `{"foo":["x","y"]}`},
+		{[]ExpValue{{"foo", "x"}, {"foo___array", "y"}}, `{"foo":["x","y"]}`},
 		{[]ExpValue{{"nested__foo___array", "x"}, {"nested__foo___array", "y"}}, `{"nested":{"foo":["x","y"]}}`},
 		{[]ExpValue{{"foobar___bool", "true"}}, `{"foobar":true}`},
 		{[]ExpValue{{"foobar___int", "42"}}, `{"foobar":42}`},
@@ -34,6 +35,8 @@ func TestExpressions(t *testing.T) {
 		{[]ExpValue{{"nested__foo___array___optional", ""}, {"nested__foo___array___optional", "y"}}, `{"nested":{"foo":["y"]}}`},
 		{[]ExpValue{{"nested__foo___array___null", ""}, {"nested__foo___array___optional", "y"}}, `{"nested":{"foo":[null,"y"]}}`},
 		{[]ExpValue{{"nested__foo___array___path__a", "x"}, {"nested__foo___array___path__b", "y"}}, `{"nested":{"foo":[{"a":"x"},{"b":"y"}]}}`},
+		{[]ExpValue{{"nested__foo___array___path__a", "x"}, {"nested__foo___path__b", "y"}}, `{"nested":{"foo":[{"a":"x","b":"y"}]}}`},
+		{[]ExpValue{{"nested__foo___path__b", "y"}, {"nested__foo___array___path__a", "x"}}, `{"nested":{"foo":[{"a":"x","b":"y"}]}}`},
 	}
 
 	for i, tt := range tests {

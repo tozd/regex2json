@@ -131,7 +131,8 @@ var Library = map[string]func(args ...string) (Op, error){
 			}
 			return s, nil
 		}, nil
-	}, "path": func(args ...string) (Op, error) {
+	},
+	"path": func(args ...string) (Op, error) {
 		if len(args) == 0 {
 			return nil, fmt.Errorf("missing path arguments")
 		}
@@ -182,33 +183,85 @@ func (s Expression) Apply(output map[string]any, value string) error {
 	return s.merge(output, in.(map[string]any))
 }
 
-func (s Expression) merge(output map[string]any, update map[string]any) error {
-	for key, value := range update {
-		outputValue, ok := output[key]
+func (s Expression) merge(left map[string]any, right map[string]any) error {
+	for key, rightValue := range right {
+		leftValue, ok := left[key]
 		if ok {
-			switch o := outputValue.(type) {
+			switch lv := leftValue.(type) {
 			case map[string]any:
-				v, ok := value.(map[string]any)
-				if ok {
-					err := s.merge(o, v)
+				switch rv := rightValue.(type) {
+				case map[string]any:
+					// Left and right are maps. We merge them.
+					err := s.merge(lv, rv)
 					if err != nil {
 						return fmt.Errorf("%s__%w", key, err)
 					}
-				} else {
+				case []any:
+					if len(rv) == 0 {
+						// Left is a map, right is an empty slice. We wrap the map into an slice.
+						left[key] = []any{leftValue}
+					} else {
+						switch r := rv[0].(type) {
+						case map[string]any:
+							// Left is a map, right is a slice and the first element of right is a map.
+							// We merge left into the first element of the slice and the slice is the result.
+							err := s.merge(lv, r)
+							if err != nil {
+								return fmt.Errorf("%s__%w", key, err)
+							}
+							rv[0] = lv
+							left[key] = rv
+						default:
+							// Left is a map, right is a slice and the first element of right is not a map.
+							// We do not know how to merge a map with something which is not a map.
+							return fmt.Errorf("%s: type mismatch", key)
+						}
+					}
+				default:
+					// Left is a map, right is not a map nor a slice. We do not know how to merge that.
 					return fmt.Errorf("%s: type mismatch", key)
 				}
 			case []any:
-				v, ok := value.([]any)
-				if ok {
-					output[key] = append(o, v...)
-				} else {
-					return fmt.Errorf("%s: type mismatch", key)
+				switch rv := rightValue.(type) {
+				case map[string]any:
+					if len(lv) == 0 {
+						// Left is an empty slice, right is a map. We wrap the map into an slice.
+						left[key] = []any{rightValue}
+					} else {
+						switch l := lv[len(lv)-1].(type) {
+						case map[string]any:
+							// Left is a slice and the last element of left is a map, right is a map.
+							// We merge right into the last element of the slice and the slice is the result.
+							err := s.merge(l, rv)
+							if err != nil {
+								return fmt.Errorf("%s__%w", key, err)
+							}
+							lv[len(lv)-1] = l
+							left[key] = lv
+						default:
+							// Left is a slice and the last element of left is not a map, right is a map.
+							// We do not know how to merge a map with something which is not a map.
+							return fmt.Errorf("%s: type mismatch", key)
+						}
+					}
+				case []any:
+					// Left is a slice, right is a slice. We concatenate right to the end of left.
+					left[key] = append(lv, rv...)
+				default:
+					// Left is a slice, right is not a map nor a slice. We append it to the end of left.
+					left[key] = append(lv, rv)
 				}
 			default:
-				return fmt.Errorf("%s: value already exist", key)
+				switch rv := rightValue.(type) {
+				case []any:
+					// Left is not a map nor a slice, right is a slice. We prepend it to the start of right.
+					left[key] = append([]any{lv}, rv...)
+				default:
+					return fmt.Errorf("%s: value already exist", key)
+				}
 			}
 		} else {
-			output[key] = value
+			left[key] = rightValue
 		}
 	}
 
