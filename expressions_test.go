@@ -29,6 +29,10 @@ func TestExpressions(t *testing.T) {
 		{[]ExpValue{{"foobar___bool", "true"}}, `{"foobar":true}`},
 		{[]ExpValue{{"foobar___int", "42"}}, `{"foobar":42}`},
 		{[]ExpValue{{"foobar___float", "42.1"}}, `{"foobar":42.1}`},
+		{[]ExpValue{{"foobar___null", ""}}, `{"foobar":null}`},
+		{[]ExpValue{{"foobar___optional", ""}}, `{}`},
+		{[]ExpValue{{"nested__foo___array___optional", ""}, {"nested__foo___array___optional", "y"}}, `{"nested":{"foo":["y"]}}`},
+		{[]ExpValue{{"nested__foo___array___null", ""}, {"nested__foo___array___optional", "y"}}, `{"nested":{"foo":[null,"y"]}}`},
 		{[]ExpValue{{"nested__foo___array___path__a", "x"}, {"nested__foo___array___path__b", "y"}}, `{"nested":{"foo":[{"a":"x"},{"b":"y"}]}}`},
 	}
 

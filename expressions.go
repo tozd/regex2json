@@ -8,15 +8,36 @@ import (
 
 type Op = func(in any) (any, error)
 
+type optionalType int
+
+const (
+	// Singleton for optional value. Optional value gets discarded eventually.
+	optional optionalType = iota
+)
+
+func toStringOrSkip(in any) (string, bool, error) {
+	s, ok := (in).(string)
+	if !ok {
+		if in == nil || in == optional {
+			return "", true, nil
+		}
+		return "", false, fmt.Errorf("value is not a string")
+	}
+	return s, false, nil
+}
+
 var Library = map[string]func(args ...string) (Op, error){
 	"int": func(args ...string) (Op, error) {
 		if len(args) > 0 {
 			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
 		}
 		return func(in any) (any, error) {
-			s, ok := (in).(string)
-			if !ok {
-				return nil, fmt.Errorf("value is not a string")
+			s, skip, err := toStringOrSkip(in)
+			if err != nil {
+				return nil, err
+			}
+			if skip {
+				return in, nil
 			}
 			n, err := strconv.ParseInt(s, 10, 64)
 			if err != nil {
@@ -30,9 +51,12 @@ var Library = map[string]func(args ...string) (Op, error){
 			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
 		}
 		return func(in any) (any, error) {
-			s, ok := (in).(string)
-			if !ok {
-				return nil, fmt.Errorf("value is not a string")
+			s, skip, err := toStringOrSkip(in)
+			if err != nil {
+				return nil, err
+			}
+			if skip {
+				return in, nil
 			}
 			f, err := strconv.ParseFloat(s, 64)
 			if err != nil {
@@ -46,9 +70,12 @@ var Library = map[string]func(args ...string) (Op, error){
 			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
 		}
 		return func(in any) (any, error) {
-			s, ok := (in).(string)
-			if !ok {
-				return nil, fmt.Errorf("value is not a string")
+			s, skip, err := toStringOrSkip(in)
+			if err != nil {
+				return nil, err
+			}
+			if skip {
+				return in, nil
 			}
 			b, err := strconv.ParseBool(s)
 			if err != nil {
@@ -62,14 +89,58 @@ var Library = map[string]func(args ...string) (Op, error){
 			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
 		}
 		return func(in any) (any, error) {
+			// An opportunity to discard optional value.
+			if in == optional {
+				return []any{}, nil
+			}
 			return []any{in}, nil
 		}, nil
 	},
-	"path": func(args ...string) (Op, error) {
+	"null": func(args ...string) (Op, error) {
+		if len(args) > 0 {
+			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
+		}
+		return func(in any) (any, error) {
+			s, skip, err := toStringOrSkip(in)
+			if err != nil {
+				return nil, err
+			}
+			if skip {
+				return in, nil
+			}
+			if s == "" {
+				return nil, nil
+			}
+			return s, nil
+		}, nil
+	},
+	"optional": func(args ...string) (Op, error) {
+		if len(args) > 0 {
+			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
+		}
+		return func(in any) (any, error) {
+			s, skip, err := toStringOrSkip(in)
+			if err != nil {
+				return nil, err
+			}
+			if skip {
+				return in, nil
+			}
+			if s == "" {
+				return optional, nil
+			}
+			return s, nil
+		}, nil
+	}, "path": func(args ...string) (Op, error) {
 		if len(args) == 0 {
 			return nil, fmt.Errorf("missing path arguments")
 		}
 		return func(in any) (any, error) {
+			// We discard optional value.
+			if in == optional {
+				return in, nil
+			}
+
 			res := map[string]any{}
 
 			current := res
@@ -102,6 +173,10 @@ func (s Expression) Apply(output map[string]any, value string) error {
 		if err != nil {
 			return err
 		}
+	}
+	// We discard optional value.
+	if in == optional {
+		return nil
 	}
 	// The first operator is the path, so we know the type of in.
 	return s.merge(output, in.(map[string]any))
