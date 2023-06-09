@@ -132,7 +132,7 @@ var Library = map[string]func(args ...string) (Op, error){
 			return s, nil
 		}, nil
 	},
-	"path": func(args ...string) (Op, error) {
+	"object": func(args ...string) (Op, error) {
 		if len(args) == 0 {
 			return nil, fmt.Errorf("missing path arguments")
 		}
@@ -179,7 +179,7 @@ func (s Expression) Apply(output map[string]any, value string) error {
 	if in == optional {
 		return nil
 	}
-	// The first operator is the path, so we know the type of in.
+	// The first operator is the object, so we know the type of in.
 	return s.merge(output, in.(map[string]any))
 }
 
@@ -283,10 +283,10 @@ func NewExpression(expression string) (*Expression, error) {
 	}
 
 	chain := strings.Split(expression, "___")
-	// The first operator is implicitly the path. We make it explicit. We do not allow/support
-	// optionally explicit first operator so that we can support "path" as field name in an object.
-	// We also do not want to require that the first path operator should always be specified.
-	chain[0] = "path__" + chain[0]
+	// The first operator is implicitly the object. We make it explicit. We do not allow/support
+	// optionally explicit first operator so that we can support "object" as field name in an object.
+	// We also do not want to require that the first object operator should always be specified.
+	chain[0] = "object__" + chain[0]
 
 	for _, c := range chain {
 		ops := strings.Split(c, "__")
