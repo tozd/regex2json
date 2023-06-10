@@ -1,4 +1,4 @@
-package main
+package r2j
 
 import (
 	"fmt"

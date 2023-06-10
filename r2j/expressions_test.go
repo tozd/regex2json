@@ -1,4 +1,4 @@
-package main
+package r2j_test
 
 import (
 	"encoding/json"
@@ -7,6 +7,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"gitlab.com/tozd/r2j/r2j"
 )
 
 type ExpValue struct {
@@ -54,7 +56,7 @@ func TestExpressions(t *testing.T) {
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
 			output := map[string]any{}
 			for _, ev := range tt.Exps {
-				e, err := NewExpression(ev.Expression)
+				e, err := r2j.NewExpression(ev.Expression)
 				require.NoError(t, err)
 				err = e.Apply(output, ev.Value)
 				if err != nil {
