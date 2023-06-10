@@ -188,22 +188,29 @@ var Library = map[string]func(args ...string) (Op, error){
 	"time": func(args ...string) (Op, error) {
 		if len(args) == 0 {
 			return nil, fmt.Errorf("missing format argument")
-		} else if len(args) > 2 {
-			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args[2:], ", "))
+		} else if len(args) > 3 {
+			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args[3:], ", "))
 		}
 		parseLayout, ok := TimeFormats[args[0]]
 		if !ok {
 			return nil, fmt.Errorf("unknown format: %s", args[0])
 		}
-		var formatLayout string
+		formatLayout := TimeFormats["RFC3339Milli"] // Default.
 		if len(args) > 1 {
 			formatLayout, ok = TimeFormats[args[1]]
 			if !ok {
 				return nil, fmt.Errorf("unknown format: %s", args[1])
 			}
-		} else {
-			// Default.
-			formatLayout = TimeFormats["RFC3339Milli"]
+		}
+		var err error
+		formatLocation := time.UTC // Default.
+		if len(args) > 2 {
+			// Capture group names in Go support only a limited set of characters.
+			// So we replace the first _ with / which is common in time zone names.
+			formatLocation, err = time.LoadLocation(strings.Replace(args[2], "_", "/", 1))
+			if err != nil {
+				return nil, err
+			}
 		}
 		return func(in any) (any, error) {
 			s, skip, err := toStringOrSkip(in)
@@ -217,10 +224,7 @@ var Library = map[string]func(args ...string) (Op, error){
 			if err != nil {
 				return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s): %w`, s, parseLayout, args[0], err)
 			}
-			t = t.UTC()
-			timeBuffer := make([]byte, 0, 30)
-			timeBuffer = t.AppendFormat(timeBuffer, formatLayout)
-			return string(timeBuffer), nil
+			return t.In(formatLocation).Format(formatLayout), nil
 		}, nil
 	},
 }
