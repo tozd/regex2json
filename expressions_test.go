@@ -44,6 +44,7 @@ func TestExpressions(t *testing.T) {
 		{[]ExpValue{{"foo__bar", "x"}, {"foo___int", "1"}}, `foo: type mismatch`},
 		{[]ExpValue{{"foo___array___optional", ""}, {"foo", "x"}}, `{"foo":["x"]}`},
 		{[]ExpValue{{"foo___array___int", "1"}, {"foo__bar", "x"}}, `foo: type mismatch`},
+		{[]ExpValue{{"foo___time__UnixDate", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09T20:21:17.000Z"}`},
 	}
 
 	for i, tt := range tests {

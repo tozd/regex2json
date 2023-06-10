@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Op = func(in any) (any, error)
@@ -24,6 +25,27 @@ func toStringOrSkip(in any) (string, bool, error) {
 		return "", false, fmt.Errorf("value is not a string")
 	}
 	return s, false, nil
+}
+
+var DateFormats = map[string]string{
+	"ANSIC":       time.ANSIC,
+	"UnixDate":    time.UnixDate,
+	"RubyDate":    time.RubyDate,
+	"RFC822":      time.RFC822,
+	"RFC822Z":     time.RFC822Z,
+	"RFC850":      time.RFC850,
+	"RFC1123":     time.RFC1123,
+	"RFC1123Z":    time.RFC1123Z,
+	"RFC3339":     time.RFC3339,
+	"RFC3339Nano": time.RFC3339Nano,
+	"Kitchen":     time.Kitchen,
+	"Stamp":       time.Stamp,
+	"StampMilli":  time.StampMilli,
+	"StampMicro":  time.StampMicro,
+	"StampNano":   time.StampNano,
+	"DateTime":    time.DateTime,
+	"DateOnly":    time.DateOnly,
+	"TimeOnly":    time.TimeOnly,
 }
 
 var Library = map[string]func(args ...string) (Op, error){
@@ -157,6 +179,34 @@ var Library = map[string]func(args ...string) (Op, error){
 			}
 
 			return res, nil
+		}, nil
+	},
+	"time": func(args ...string) (Op, error) {
+		if len(args) == 0 {
+			return nil, fmt.Errorf("missing format argument")
+		} else if len(args) > 1 {
+			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args[1:], ", "))
+		}
+		layout, ok := DateFormats[args[0]]
+		if !ok {
+			return nil, fmt.Errorf("unknown format: %s", args[0])
+		}
+		return func(in any) (any, error) {
+			s, skip, err := toStringOrSkip(in)
+			if err != nil {
+				return nil, err
+			}
+			if skip {
+				return in, nil
+			}
+			t, err := time.Parse(layout, s)
+			if err != nil {
+				return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s): %w`, s, layout, args[0], err)
+			}
+			t = t.UTC()
+			timeBuffer := make([]byte, 0, 30)
+			timeBuffer = t.AppendFormat(timeBuffer, "2006-01-02T15:04:05.000Z07:00")
+			return string(timeBuffer), nil
 		}, nil
 	},
 }
