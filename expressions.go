@@ -27,25 +27,29 @@ func toStringOrSkip(in any) (string, bool, error) {
 	return s, false, nil
 }
 
-var DateFormats = map[string]string{
-	"ANSIC":       time.ANSIC,
-	"UnixDate":    time.UnixDate,
-	"RubyDate":    time.RubyDate,
-	"RFC822":      time.RFC822,
-	"RFC822Z":     time.RFC822Z,
-	"RFC850":      time.RFC850,
-	"RFC1123":     time.RFC1123,
-	"RFC1123Z":    time.RFC1123Z,
-	"RFC3339":     time.RFC3339,
-	"RFC3339Nano": time.RFC3339Nano,
-	"Kitchen":     time.Kitchen,
-	"Stamp":       time.Stamp,
-	"StampMilli":  time.StampMilli,
-	"StampMicro":  time.StampMicro,
-	"StampNano":   time.StampNano,
-	"DateTime":    time.DateTime,
-	"DateOnly":    time.DateOnly,
-	"TimeOnly":    time.TimeOnly,
+var TimeFormats = map[string]string{
+	"ANSIC":        time.ANSIC,
+	"UnixDate":     time.UnixDate,
+	"RubyDate":     time.RubyDate,
+	"RFC822":       time.RFC822,
+	"RFC822Z":      time.RFC822Z,
+	"RFC850":       time.RFC850,
+	"RFC1123":      time.RFC1123,
+	"RFC1123Z":     time.RFC1123Z,
+	"RFC3339":      time.RFC3339,
+	"RFC3339Milli": "2006-01-02T15:04:05.000Z07:00",
+	"RFC3339Micro": "2006-01-02T15:04:05.000000Z07:00",
+	"RFC3339Nano":  time.RFC3339Nano,
+	// RFC3339Nano without removing trailing zeros.
+	"RFC3339NanoZeros": "2006-01-02T15:04:05.000000000Z07:00",
+	"Kitchen":          time.Kitchen,
+	"Stamp":            time.Stamp,
+	"StampMilli":       time.StampMilli,
+	"StampMicro":       time.StampMicro,
+	"StampNano":        time.StampNano,
+	"DateTime":         time.DateTime,
+	"DateOnly":         time.DateOnly,
+	"TimeOnly":         time.TimeOnly,
 }
 
 var Library = map[string]func(args ...string) (Op, error){
@@ -184,12 +188,22 @@ var Library = map[string]func(args ...string) (Op, error){
 	"time": func(args ...string) (Op, error) {
 		if len(args) == 0 {
 			return nil, fmt.Errorf("missing format argument")
-		} else if len(args) > 1 {
-			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args[1:], ", "))
+		} else if len(args) > 2 {
+			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args[2:], ", "))
 		}
-		layout, ok := DateFormats[args[0]]
+		parseLayout, ok := TimeFormats[args[0]]
 		if !ok {
 			return nil, fmt.Errorf("unknown format: %s", args[0])
+		}
+		var formatLayout string
+		if len(args) > 1 {
+			formatLayout, ok = TimeFormats[args[1]]
+			if !ok {
+				return nil, fmt.Errorf("unknown format: %s", args[1])
+			}
+		} else {
+			// Default.
+			formatLayout = TimeFormats["RFC3339Milli"]
 		}
 		return func(in any) (any, error) {
 			s, skip, err := toStringOrSkip(in)
@@ -199,13 +213,13 @@ var Library = map[string]func(args ...string) (Op, error){
 			if skip {
 				return in, nil
 			}
-			t, err := time.Parse(layout, s)
+			t, err := time.Parse(parseLayout, s)
 			if err != nil {
-				return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s): %w`, s, layout, args[0], err)
+				return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s): %w`, s, parseLayout, args[0], err)
 			}
 			t = t.UTC()
 			timeBuffer := make([]byte, 0, 30)
-			timeBuffer = t.AppendFormat(timeBuffer, "2006-01-02T15:04:05.000Z07:00")
+			timeBuffer = t.AppendFormat(timeBuffer, formatLayout)
 			return string(timeBuffer), nil
 		}, nil
 	},
