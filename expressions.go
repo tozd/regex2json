@@ -188,8 +188,8 @@ var Library = map[string]func(args ...string) (Op, error){
 	"time": func(args ...string) (Op, error) {
 		if len(args) == 0 {
 			return nil, fmt.Errorf("missing format argument")
-		} else if len(args) > 3 {
-			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args[3:], ", "))
+		} else if len(args) > 4 {
+			return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args[4:], ", "))
 		}
 		parseLayout, ok := TimeFormats[args[0]]
 		if !ok {
@@ -212,6 +212,15 @@ var Library = map[string]func(args ...string) (Op, error){
 				return nil, err
 			}
 		}
+		parseLocation := time.Local // Default.
+		if len(args) > 3 {
+			// Capture group names in Go support only a limited set of characters.
+			// So we replace the first _ with / which is common in time zone names.
+			parseLocation, err = time.LoadLocation(strings.Replace(args[3], "_", "/", 1))
+			if err != nil {
+				return nil, err
+			}
+		}
 		return func(in any) (any, error) {
 			s, skip, err := toStringOrSkip(in)
 			if err != nil {
@@ -220,7 +229,7 @@ var Library = map[string]func(args ...string) (Op, error){
 			if skip {
 				return in, nil
 			}
-			t, err := time.Parse(parseLayout, s)
+			t, err := time.ParseInLocation(parseLayout, s, parseLocation)
 			if err != nil {
 				return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s): %w`, s, parseLayout, args[0], err)
 			}
