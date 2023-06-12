@@ -1,3 +1,24 @@
+// regex2json reads lines from stdin, matching every line with the provided regexp.
+// If line matches, values from captured named groups are mapped into output JSON
+// which is then written out to stdout.
+//
+// Capture groups' names are compiled into Expressions and describe how are matched
+// values mapped and transformed into output JSON. See [regex2json.Expression] for
+// details on the syntax and [regex2json.Library] for available operators.
+//
+// Any failed expression is logged to stderr while the rest of the output JSON is still
+// written out.
+//
+// If regexp can match multiple times per line, all matches are combined together
+// into the same ome JSON output per line.
+//
+// Usage:
+//
+//	regex2json <regexp>
+//
+// Example:
+//
+//	regex2json "(?P<date___time__UnixDate__RFC3339>.+)"
 package main
 
 import (
