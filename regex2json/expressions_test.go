@@ -1,4 +1,4 @@
-package r2j_test
+package regex2json_test
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/tozd/r2j/r2j"
+	"gitlab.com/tozd/regex2json/regex2json"
 )
 
 type ExpValue struct {
@@ -42,10 +42,10 @@ var Tests = []struct {
 	{[]ExpValue{{"foo", "x"}, {"foo___array___optional", ""}}, `{"foo":["x"]}`, []string{}},
 	{[]ExpValue{{"foo", "x"}, {"foo___array___int", "1"}}, `{"foo":["x",1]}`, []string{}},
 	{[]ExpValue{{"foo___array___int", "1"}, {"foo", "x"}}, `{"foo":[1,"x"]}`, []string{}},
-	{[]ExpValue{{"foo__bar", "x"}, {"foo___array___int", "1"}}, `{"foo":{"bar":"x"}}`, []string{`foo: type mismatch`}},
+	{[]ExpValue{{"foo__bar", "x"}, {"foo___array___int", "1"}}, `{"foo":[{"bar":"x"},1]}`, []string{}},
 	{[]ExpValue{{"foo__bar", "x"}, {"foo___int", "1"}}, `{"foo":{"bar":"x"}}`, []string{`foo: type mismatch`}},
 	{[]ExpValue{{"foo___array___optional", ""}, {"foo", "x"}}, `{"foo":["x"]}`, []string{}},
-	{[]ExpValue{{"foo___array___int", "1"}, {"foo__bar", "x"}}, `{"foo":[1]}`, []string{`foo: type mismatch`}},
+	{[]ExpValue{{"foo___array___int", "1"}, {"foo__bar", "x"}}, `{"foo":[1,{"bar":"x"}]}`, []string{}},
 	{[]ExpValue{{"foo___time__UnixDate", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09T20:21:17.000Z"}`, []string{}},
 	{[]ExpValue{{"foo___time__UnixDate__DateTime", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09 20:21:17"}`, []string{}},
 	{[]ExpValue{{"foo___time__UnixDate__DateTime__Europe_Ljubljana", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09 22:21:17"}`, []string{}},
@@ -58,7 +58,7 @@ func TestExpression(t *testing.T) {
 			output := map[string]any{}
 			errI := 0
 			for _, ev := range tt.Exps {
-				e, err := r2j.NewExpression(ev.Expression)
+				e, err := regex2json.NewExpression(ev.Expression)
 				require.NoError(t, err)
 				err = e.Apply(output, ev.Value)
 				if err != nil && errI < len(tt.Errors) {

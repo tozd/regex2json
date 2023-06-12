@@ -1,4 +1,4 @@
-package r2j
+package regex2json
 
 import (
 	"bufio"
@@ -9,11 +9,13 @@ import (
 	"regexp"
 )
 
+// CompileExpressions compiles all names of named capture groups into a slice of Expressions.
+// The Expression at index 0 is nil and should be skipped as it corresponds to the entire regexp match.
 func CompileExpressions(r *regexp.Regexp) ([]*Expression, error) {
 	expressions := make([]*Expression, 0)
 
 	for i, expression := range r.SubexpNames() {
-		// We skip the entire expression match at 0 index.
+		// We skip the entire regexp match at index 0.
 		if i == 0 {
 			expressions = append(expressions, nil)
 			continue
@@ -33,6 +35,20 @@ func CompileExpressions(r *regexp.Regexp) ([]*Expression, error) {
 	return expressions, nil
 }
 
+// Transform reads lines from in, matching every line with regexp r. If line matches, values from
+// captured named groups are mapped into output JSON which is then written out to out.
+//
+// Capture groups' names are compiled into Expressions and describe how are matched values mapped
+// and transformed into output JSON. See [Expression] for details on the syntax and [Library] for
+// available operators.
+//
+// If logger is provided, any failed expression is logged to it while the rest of the output JSON
+// is still written out.
+// If logger is not provided, any failed expression is returned as error of the function,
+// aborting the transformation.
+//
+// If regexp r can match multiple times per line, all matches are combined together into
+// the same ome JSON output per line.
 func Transform(r *regexp.Regexp, in io.Reader, out io.Writer, logger *log.Logger) error {
 	expressions, err := CompileExpressions(r)
 	if err != nil {
@@ -52,6 +68,10 @@ func Transform(r *regexp.Regexp, in io.Reader, out io.Writer, logger *log.Logger
 			output := map[string]any{}
 
 			matches := r.FindAllSubmatch(line, -1)
+			if len(matches) == 0 {
+				continue
+			}
+
 			for _, match := range matches {
 				for i, value := range match {
 					// Nil expressions we skip.
@@ -63,7 +83,11 @@ func Transform(r *regexp.Regexp, in io.Reader, out io.Writer, logger *log.Logger
 
 					err := expressions[i].Apply(output, v)
 					if err != nil {
-						logger.Printf(`failed to apply expression "%s" for value "%s" and line "%s": %s`, expressions[i].String(), v, line, err)
+						if logger != nil {
+							logger.Printf(`failed to apply expression "%s" for value "%s" and line "%s": %s`, expressions[i].String(), v, line, err)
+						} else {
+							return fmt.Errorf(`failed to apply expression "%s" for value "%s" and line "%s": %w`, expressions[i].String(), v, line, err)
+						}
 					}
 				}
 			}

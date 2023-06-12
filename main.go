@@ -5,7 +5,7 @@ import (
 	"os"
 	"regexp"
 
-	"gitlab.com/tozd/r2j/r2j"
+	"gitlab.com/tozd/regex2json/regex2json"
 )
 
 const (
@@ -29,7 +29,7 @@ func main() {
 		os.Exit(exitFailure)
 	}
 
-	err = r2j.Transform(r, os.Stdin, os.Stdout, warnLogger)
+	err = regex2json.Transform(r, os.Stdin, os.Stdout, warnLogger)
 	if err != nil {
 		errorLogger.Printf("%s", err)
 		os.Exit(exitFailure)

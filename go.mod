@@ -1,4 +1,4 @@
-module gitlab.com/tozd/r2j
+module gitlab.com/tozd/regex2json
 
 go 1.20
 

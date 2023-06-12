@@ -1,4 +1,4 @@
-package r2j_test
+package regex2json_test
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gitlab.com/tozd/r2j/r2j"
+	"gitlab.com/tozd/regex2json/regex2json"
 )
 
 func TestTransform(t *testing.T) {
@@ -34,7 +34,7 @@ func TestTransform(t *testing.T) {
 			out := bytes.Buffer{}
 			l := bytes.Buffer{}
 			warnLogger := log.New(&l, "warning: ", 0)
-			err = r2j.Transform(r, &in, &out, warnLogger)
+			err = regex2json.Transform(r, &in, &out, warnLogger)
 			require.NoError(t, err)
 			assert.Equal(t, tt.Expected+"\n", out.String())
 			lString := l.String()
