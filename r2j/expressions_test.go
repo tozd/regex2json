@@ -16,52 +16,55 @@ type ExpValue struct {
 	Value      string
 }
 
-func TestExpressions(t *testing.T) {
-	tests := []struct {
-		Exps     []ExpValue
-		Expected string
-	}{
-		{[]ExpValue{{"foobar", "x"}}, `{"foobar":"x"}`},
-		{[]ExpValue{{"foo", "x"}, {"bar", "y"}}, `{"bar":"y","foo":"x"}`},
-		{[]ExpValue{{"nested__foo", "x"}, {"nested__bar", "y"}}, `{"nested":{"bar":"y","foo":"x"}}`},
-		{[]ExpValue{{"nested__foo", "x"}, {"nested__foo", "y"}}, `nested__foo: value already exist`},
-		{[]ExpValue{{"foo___array", "x"}, {"foo___array", "y"}}, `{"foo":["x","y"]}`},
-		{[]ExpValue{{"foo___array", "x"}, {"foo", "y"}}, `{"foo":["x","y"]}`},
-		{[]ExpValue{{"foo", "x"}, {"foo___array", "y"}}, `{"foo":["x","y"]}`},
-		{[]ExpValue{{"nested__foo___array", "x"}, {"nested__foo___array", "y"}}, `{"nested":{"foo":["x","y"]}}`},
-		{[]ExpValue{{"foobar___bool", "true"}}, `{"foobar":true}`},
-		{[]ExpValue{{"foobar___int", "42"}}, `{"foobar":42}`},
-		{[]ExpValue{{"foobar___float", "42.1"}}, `{"foobar":42.1}`},
-		{[]ExpValue{{"foobar___null", ""}}, `{"foobar":null}`},
-		{[]ExpValue{{"foobar___optional", ""}}, `{}`},
-		{[]ExpValue{{"nested__foo___array___optional", ""}, {"nested__foo___array___optional", "y"}}, `{"nested":{"foo":["y"]}}`},
-		{[]ExpValue{{"nested__foo___array___null", ""}, {"nested__foo___array___optional", "y"}}, `{"nested":{"foo":[null,"y"]}}`},
-		{[]ExpValue{{"nested__foo___array___object__a", "x"}, {"nested__foo___array___object__b", "y"}}, `{"nested":{"foo":[{"a":"x"},{"b":"y"}]}}`},
-		{[]ExpValue{{"nested__foo___array___object__a", "x"}, {"nested__foo___object__b", "y"}}, `{"nested":{"foo":[{"a":"x","b":"y"}]}}`},
-		{[]ExpValue{{"nested__foo___object__b", "y"}, {"nested__foo___array___object__a", "x"}}, `{"nested":{"foo":[{"a":"x","b":"y"}]}}`},
-		{[]ExpValue{{"foo", "x"}, {"foo___array___optional", ""}}, `{"foo":["x"]}`},
-		{[]ExpValue{{"foo", "x"}, {"foo___array___int", "1"}}, `{"foo":["x",1]}`},
-		{[]ExpValue{{"foo___array___int", "1"}, {"foo", "x"}}, `{"foo":[1,"x"]}`},
-		{[]ExpValue{{"foo__bar", "x"}, {"foo___array___int", "1"}}, `foo: type mismatch`},
-		{[]ExpValue{{"foo__bar", "x"}, {"foo___int", "1"}}, `foo: type mismatch`},
-		{[]ExpValue{{"foo___array___optional", ""}, {"foo", "x"}}, `{"foo":["x"]}`},
-		{[]ExpValue{{"foo___array___int", "1"}, {"foo__bar", "x"}}, `foo: type mismatch`},
-		{[]ExpValue{{"foo___time__UnixDate", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09T20:21:17.000Z"}`},
-		{[]ExpValue{{"foo___time__UnixDate__DateTime", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09 20:21:17"}`},
-		{[]ExpValue{{"foo___time__UnixDate__DateTime__Europe_Ljubljana", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09 22:21:17"}`},
-		{[]ExpValue{{"foo___time__DateTime__UnixDate__UTC__Europe_Ljubljana", "2023-06-09 22:21:17"}}, `{"foo":"Fri Jun  9 20:21:17 UTC 2023"}`},
-	}
+var Tests = []struct {
+	Exps     []ExpValue
+	Expected string
+	Errors   []string
+}{
+	{[]ExpValue{{"foobar", "x"}}, `{"foobar":"x"}`, []string{}},
+	{[]ExpValue{{"foo", "x"}, {"bar", "y"}}, `{"bar":"y","foo":"x"}`, []string{}},
+	{[]ExpValue{{"nested__foo", "x"}, {"nested__bar", "y"}}, `{"nested":{"bar":"y","foo":"x"}}`, []string{}},
+	{[]ExpValue{{"nested__foo", "x"}, {"nested__foo", "y"}}, `{"nested":{"foo":"x"}}`, []string{`nested__foo: value already exist`}},
+	{[]ExpValue{{"foo___array", "x"}, {"foo___array", "y"}}, `{"foo":["x","y"]}`, []string{}},
+	{[]ExpValue{{"foo___array", "x"}, {"foo", "y"}}, `{"foo":["x","y"]}`, []string{}},
+	{[]ExpValue{{"foo", "x"}, {"foo___array", "y"}}, `{"foo":["x","y"]}`, []string{}},
+	{[]ExpValue{{"nested__foo___array", "x"}, {"nested__foo___array", "y"}}, `{"nested":{"foo":["x","y"]}}`, []string{}},
+	{[]ExpValue{{"foobar___bool", "true"}}, `{"foobar":true}`, []string{}},
+	{[]ExpValue{{"foobar___int", "42"}}, `{"foobar":42}`, []string{}},
+	{[]ExpValue{{"foobar___float", "42.1"}}, `{"foobar":42.1}`, []string{}},
+	{[]ExpValue{{"foobar___null", ""}}, `{"foobar":null}`, []string{}},
+	{[]ExpValue{{"foobar___optional", ""}}, `{}`, []string{}},
+	{[]ExpValue{{"nested__foo___array___optional", ""}, {"nested__foo___array___optional", "y"}}, `{"nested":{"foo":["y"]}}`, []string{}},
+	{[]ExpValue{{"nested__foo___array___null", ""}, {"nested__foo___array___optional", "y"}}, `{"nested":{"foo":[null,"y"]}}`, []string{}},
+	{[]ExpValue{{"nested__foo___array___object__a", "x"}, {"nested__foo___array___object__b", "y"}}, `{"nested":{"foo":[{"a":"x"},{"b":"y"}]}}`, []string{}},
+	{[]ExpValue{{"nested__foo___array___object__a", "x"}, {"nested__foo___object__b", "y"}}, `{"nested":{"foo":[{"a":"x","b":"y"}]}}`, []string{}},
+	{[]ExpValue{{"nested__foo___object__b", "y"}, {"nested__foo___array___object__a", "x"}}, `{"nested":{"foo":[{"a":"x","b":"y"}]}}`, []string{}},
+	{[]ExpValue{{"foo", "x"}, {"foo___array___optional", ""}}, `{"foo":["x"]}`, []string{}},
+	{[]ExpValue{{"foo", "x"}, {"foo___array___int", "1"}}, `{"foo":["x",1]}`, []string{}},
+	{[]ExpValue{{"foo___array___int", "1"}, {"foo", "x"}}, `{"foo":[1,"x"]}`, []string{}},
+	{[]ExpValue{{"foo__bar", "x"}, {"foo___array___int", "1"}}, `{"foo":{"bar":"x"}}`, []string{`foo: type mismatch`}},
+	{[]ExpValue{{"foo__bar", "x"}, {"foo___int", "1"}}, `{"foo":{"bar":"x"}}`, []string{`foo: type mismatch`}},
+	{[]ExpValue{{"foo___array___optional", ""}, {"foo", "x"}}, `{"foo":["x"]}`, []string{}},
+	{[]ExpValue{{"foo___array___int", "1"}, {"foo__bar", "x"}}, `{"foo":[1]}`, []string{`foo: type mismatch`}},
+	{[]ExpValue{{"foo___time__UnixDate", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09T20:21:17.000Z"}`, []string{}},
+	{[]ExpValue{{"foo___time__UnixDate__DateTime", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09 20:21:17"}`, []string{}},
+	{[]ExpValue{{"foo___time__UnixDate__DateTime__Europe_Ljubljana", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09 22:21:17"}`, []string{}},
+	{[]ExpValue{{"foo___time__DateTime__UnixDate__UTC__Europe_Ljubljana", "2023-06-09 22:21:17"}}, `{"foo":"Fri Jun  9 20:21:17 UTC 2023"}`, []string{}},
+}
 
-	for i, tt := range tests {
+func TestExpression(t *testing.T) {
+	for i, tt := range Tests {
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
 			output := map[string]any{}
+			errI := 0
 			for _, ev := range tt.Exps {
 				e, err := r2j.NewExpression(ev.Expression)
 				require.NoError(t, err)
 				err = e.Apply(output, ev.Value)
-				if err != nil {
-					assert.Equal(t, tt.Expected, err.Error())
-					return
+				if err != nil && errI < len(tt.Errors) {
+					assert.EqualError(t, err, tt.Errors[errI])
+					errI++
+					continue
 				}
 			}
 			j, err := json.Marshal(output)
