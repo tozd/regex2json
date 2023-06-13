@@ -24,7 +24,7 @@ Features:
 This is a tool implemented in Go. You can use `go install` to install the latest stable (released) version:
 
 ```sh
-go install gitlab.com/tozd/regex2json@latest
+go install gitlab.com/tozd/regex2json/cmd/regex2json@latest
 ```
 
 [Releases page](https://gitlab.com/tozd/regex2json/-/releases)
@@ -36,7 +36,7 @@ contains a list of stable versions. Each includes:
 To install the latest development version (`main` branch):
 
 ```sh
-go install gitlab.com/tozd/regex2json@main
+go install gitlab.com/tozd/regex2json/cmd/regex2json@main
 ```
 
 ## Usage
