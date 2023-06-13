@@ -10,7 +10,7 @@
 // written out.
 //
 // If regexp can match multiple times per line, all matches are combined together
-// into the same ome JSON output per line.
+// into the same one JSON output per line.
 //
 // Usage:
 //
