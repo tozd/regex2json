@@ -48,6 +48,8 @@ var Tests = []struct {
 	{[]ExpValue{{"foo___array___int", "1"}, {"foo__bar", "x"}}, `{"foo":[1,{"bar":"x"}]}`, []string{}},
 	{[]ExpValue{{"foo___time__UnixDate", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09T20:21:17.000Z"}`, []string{}},
 	{[]ExpValue{{"foo___time__UnixDate__DateTime", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09 20:21:17"}`, []string{}},
+	{[]ExpValue{{"foo___time__UnixDate__DateTime__UTC__UTC", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09 20:21:17"}`, []string{}},
+	{[]ExpValue{{"foo___time__UnixDate__DateTime", "Fri Jun  9 22:21:17 MST 2023"}}, `{"foo":"2023-06-10 05:21:17"}`, []string{}},
 	{[]ExpValue{{"foo___time__UnixDate__DateTime__Europe_Ljubljana", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09 22:21:17"}`, []string{}},
 	{[]ExpValue{{"foo___time__DateTime__UnixDate__UTC__Europe_Ljubljana", "2023-06-09 22:21:17"}}, `{"foo":"Fri Jun  9 20:21:17 UTC 2023"}`, []string{}},
 }

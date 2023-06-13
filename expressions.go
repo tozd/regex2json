@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/tkuchiki/go-timezone"
 )
 
 // Op is the operator's function type.
@@ -22,6 +24,8 @@ const (
 	// Singleton for optional value. Optional value gets discarded eventually.
 	optional optionalType = iota
 )
+
+var tz = timezone.New()
 
 func toStringOrSkip(in any) (string, bool, error) {
 	s, ok := (in).(string)
@@ -282,6 +286,39 @@ func TimeOperator(args ...string) (Op, error) {
 		t, err := time.ParseInLocation(parseLayout, s, parseLocation)
 		if err != nil {
 			return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s) in location "%s": %w`, s, parseLayout, args[0], parseLocation, err)
+		}
+		// Parsing might not succeed in using timezone abbreviation when present (when it does not match parseLocation).
+		// In such case time.ParseInLocation uses a fabricated location with the given timezone abbreviation and a zero
+		// offset. We try to obtain correct location from timezone abbreviation and parse again in that location.
+		zone, offset := t.Zone()
+		if t.Location() != parseLocation && offset == 0 {
+			l, err := time.LoadLocation(zone)
+			if err == nil {
+				t, err = time.ParseInLocation(parseLayout, s, l)
+				if err != nil {
+					return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s) in location "%s": %w`, s, parseLayout, args[0], l, err)
+				}
+			} else {
+				zones, err := tz.GetTimezones(zone)
+				if err != nil {
+					return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s): unable to parse timezone "%s": %w`, s, parseLayout, args[0], zone, err)
+				}
+				found := false
+				for _, z := range zones {
+					l, err := time.LoadLocation(z)
+					if err == nil {
+						t, err = time.ParseInLocation(parseLayout, s, l)
+						if err != nil {
+							return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s) in location "%s": %w`, s, parseLayout, args[0], l, err)
+						}
+						found = true
+						break
+					}
+				}
+				if !found {
+					return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s): unable to parse timezone "%s"`, s, parseLayout, args[0], zone)
+				}
+			}
 		}
 		return t.In(formatLocation).Format(formatLayout), nil
 	}, nil
