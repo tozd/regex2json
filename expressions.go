@@ -62,6 +62,7 @@ var TimeLayouts = map[string]string{
 	"DateTime":         time.DateTime,
 	"DateOnly":         time.DateOnly,
 	"TimeOnly":         time.TimeOnly,
+	"Nginx":            "02/Jan/2006:15:04:05 -0700",
 }
 
 // IntOperator returns the bool operator which parses input string
