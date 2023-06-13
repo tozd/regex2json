@@ -70,12 +70,14 @@ Example:
 regex2json "(?P<date___time__UnixDate__RFC3339>.+)"
 ```
 
-_Feel free to make a merge-request add more time layouts and/or operators._
-
 ### As a package
 
 See full package documentation on [pkg.go.dev](https://pkg.go.dev/badge/gitlab.com/tozd/regex2json/regex2json)
 on using regex2json as a Go package.
+
+## Contributing
+
+Feel free to make a merge-request add more time layouts and/or operators.
 
 ## Related projects
 
