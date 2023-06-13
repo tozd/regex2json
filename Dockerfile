@@ -19,7 +19,7 @@ COPY --from=build /go/bin/regex2json /
 ENTRYPOINT ["/regex2json"]
 
 FROM scratch AS production
-RUN --mount=from=busybox:1.34,src=/bin/,dst=/bin/ ["/bin/mkdir", "-m", "1755", "/tmp"]
+RUN --mount=from=busybox:1.36-musl,src=/bin/,dst=/bin/ ["/bin/mkdir", "-m", "1755", "/tmp"]
 COPY --from=build /etc/services /etc/services
 COPY --from=build /etc/protocols /etc/protocols
 # Apart from the USER statement, the rest is the same as for the debug image.
