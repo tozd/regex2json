@@ -1,6 +1,6 @@
 # Convert text to JSON using only regular expressions
 
-[![pkg.go.dev](https://pkg.go.dev/badge/gitlab.com/tozd/regex2json/regex2json)](https://pkg.go.dev/gitlab.com/tozd/regex2json/regex2json)
+[![pkg.go.dev](https://pkg.go.dev/badge/gitlab.com/tozd/regex2json)](https://pkg.go.dev/gitlab.com/tozd/regex2json)
 [![Go Report Card](https://goreportcard.com/badge/gitlab.com/tozd/regex2json)](https://goreportcard.com/report/gitlab.com/tozd/regex2json)
 [![pipeline status](https://gitlab.com/tozd/regex2json/badges/main/pipeline.svg?ignore_skipped=true)](https://gitlab.com/tozd/regex2json/-/pipelines)
 [![coverage report](https://gitlab.com/tozd/regex2json/badges/main/coverage.svg)](https://gitlab.com/tozd/regex2json/-/graphs/main/charts)
@@ -47,9 +47,9 @@ which is then written out to stdout.
 
 Capture groups' names are compiled into Expressions and describe how are matched
 values mapped and transformed into output JSON. See
-[regex2json.Expression](https://pkg.go.dev/gitlab.com/tozd/regex2json/regex2json#Expression)
+[Expression](https://pkg.go.dev/gitlab.com/tozd/regex2json#Expression)
 for details on the syntax and
-[regex2json.Library](https://pkg.go.dev/gitlab.com/tozd/regex2json/regex2json#Library)
+[Library](https://pkg.go.dev/gitlab.com/tozd/regex2json#Library)
 for available operators.
 
 Any failed expression is logged to stderr while the rest of the output JSON is still
@@ -72,7 +72,7 @@ regex2json "(?P<date___time__UnixDate__RFC3339>.+)"
 
 ### As a package
 
-See full package documentation on [pkg.go.dev](https://pkg.go.dev/badge/gitlab.com/tozd/regex2json/regex2json)
+See full package documentation on [pkg.go.dev](https://pkg.go.dev/badge/gitlab.com/tozd/regex2json)
 on using regex2json as a Go package.
 
 ## Contributing

@@ -9,14 +9,14 @@ COPY . /go/src/regex2json
 WORKDIR /go/src/regex2json
 RUN \
   make build-static && \
-  mv r2j /go/bin/r2j
+  mv regex2json /go/bin/regex2json
 
 FROM alpine3.18 AS debug
 COPY --from=build /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=build /etc/passwd /etc/passwd
 COPY --from=build /etc/group /etc/group
-COPY --from=build /go/bin/r2j /
-ENTRYPOINT ["/r2j"]
+COPY --from=build /go/bin/regex2json /
+ENTRYPOINT ["/regex2json"]
 
 FROM scratch AS production
 RUN --mount=from=busybox:1.34,src=/bin/,dst=/bin/ ["/bin/mkdir", "-m", "1755", "/tmp"]
@@ -26,6 +26,6 @@ COPY --from=build /etc/protocols /etc/protocols
 COPY --from=build /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=build /etc/passwd /etc/passwd
 COPY --from=build /etc/group /etc/group
-COPY --from=build /go/bin/r2j /
+COPY --from=build /go/bin/regex2json /
 USER user:user
-ENTRYPOINT ["/r2j"]
+ENTRYPOINT ["/regex2json"]

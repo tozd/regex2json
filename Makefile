@@ -1,10 +1,10 @@
 .PHONY: build build-static test test-ci lint lint-ci fmt fmt-ci clean release lint-docs audit
 
 build:
-	go build -trimpath -ldflags "-s -w" -o r2j gitlab.com/tozd/regex2json
+	go build -trimpath -ldflags "-s -w" -o regex2json gitlab.com/tozd/regex2json/cmd/regex2json
 
 build-static:
-	go build -trimpath -ldflags "-s -w -linkmode external -extldflags '-static'" -o r2j gitlab.com/tozd/regex2json
+	go build -trimpath -ldflags "-s -w -linkmode external -extldflags '-static'" -o regex2json gitlab.com/tozd/regex2json/cmd/regex2json
 
 test:
 	gotestsum --format pkgname --packages ./... -- -race -timeout 10m -cover -covermode atomic
@@ -29,7 +29,7 @@ fmt-ci: fmt
 	git diff --exit-code --color=always
 
 clean:
-	rm -f coverage.* codeclimate.json tests.xml r2j
+	rm -f coverage.* codeclimate.json tests.xml regex2json
 
 release:
 	npx --yes --package 'release-it@15.4.2' --package '@release-it/keep-a-changelog@3.1.0' -- release-it

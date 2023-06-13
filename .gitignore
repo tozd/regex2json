@@ -1,4 +1,4 @@
 tests.xml
 coverage.*
 codeclimate.json
-/r2j
+/regex2json

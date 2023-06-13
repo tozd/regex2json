@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/tozd/regex2json/regex2json"
+	"gitlab.com/tozd/regex2json"
 )
 
 type ExpValue struct {

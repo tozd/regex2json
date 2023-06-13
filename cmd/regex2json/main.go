@@ -3,8 +3,8 @@
 // which is then written out to stdout.
 //
 // Capture groups' names are compiled into Expressions and describe how are matched
-// values mapped and transformed into output JSON. See [regex2json.Expression] for
-// details on the syntax and [regex2json.Library] for available operators.
+// values mapped and transformed into output JSON. See [Expression] for
+// details on the syntax and [Library] for available operators.
 //
 // Any failed expression is logged to stderr while the rest of the output JSON is still
 // written out.
@@ -26,7 +26,7 @@ import (
 	"os"
 	"regexp"
 
-	"gitlab.com/tozd/regex2json/regex2json"
+	"gitlab.com/tozd/regex2json"
 )
 
 const (
