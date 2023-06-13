@@ -166,7 +166,7 @@ func NullOperator(args ...string) (Op, error) {
 			return in, nil
 		}
 		if s == "" {
-			return nil, nil
+			return nil, nil //nolint:nilnil
 		}
 		return s, nil
 	}, nil
@@ -238,7 +238,7 @@ func ObjectOperator(args ...string) (Op, error) {
 func TimeOperator(args ...string) (Op, error) {
 	if len(args) == 0 {
 		return nil, fmt.Errorf("missing parse layout argument")
-	} else if len(args) > 4 {
+	} else if len(args) > 4 { //nolint:gomnd
 		return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args[4:], ", "))
 	}
 	parseLayout, ok := TimeLayouts[args[0]]
@@ -254,7 +254,7 @@ func TimeOperator(args ...string) (Op, error) {
 	}
 	var err error
 	formatLocation := time.UTC // Default.
-	if len(args) > 2 {
+	if len(args) > 2 {         //nolint:gomnd
 		// Capture group names in Go support only a limited set of characters.
 		// So we replace the first _ with / which is common in time zone names.
 		formatLocation, err = time.LoadLocation(strings.Replace(args[2], "_", "/", 1))
@@ -263,7 +263,7 @@ func TimeOperator(args ...string) (Op, error) {
 		}
 	}
 	parseLocation := time.Local // Default.
-	if len(args) > 3 {
+	if len(args) > 3 {          //nolint:gomnd
 		// Capture group names in Go support only a limited set of characters.
 		// So we replace the first _ with / which is common in time zone names.
 		parseLocation, err = time.LoadLocation(strings.Replace(args[3], "_", "/", 1))
