@@ -1,3 +1,4 @@
+//nolint:lll
 // regex2json reads lines from stdin, matching every line with the provided regexp.
 // If line matches, values from captured named groups are mapped into output JSON
 // which is then written out to stdout.
@@ -25,8 +26,9 @@
 //
 // Example:
 //
-// 	$ echo '192.168.0.100 - - [13/Jun/2023:13:15:13 +0000] "GET /index.html HTTP/1.1" 200 1234 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"' | regex2json '^(?P<address>\S+) - (?P<user>\S+) \[(?P<time___time__Nginx__RFC3339>[\w:/]+\s[+\-]\d{4})\] "(?P<method>\S+)\s?(?P<url>\S+)?\s?(?P<http>\S+)?" (?P<status___int>\d{3}) (?P<size___int>\d+|-) "(?P<referrer>[^"]*)" "(?P<agent>[^"]*)"'
-// 	{"address":"192.168.0.100","agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36","http":"HTTP/1.1","method":"GET","referrer":"-","size":1234,"status":200,"time":"2023-06-13T13:15:13Z","url":"/index.html","user":"-"}
+//	$ echo '192.168.0.100 - - [13/Jun/2023:13:15:13 +0000] "GET /index.html HTTP/1.1" 200 1234 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"' | \
+//	  regex2json '^(?P<address>\S+) - (?P<user>\S+) \[(?P<time___time__Nginx__RFC3339>[\w:/]+\s[+\-]\d{4})\] "(?P<method>\S+)\s?(?P<url>\S+)?\s?(?P<http>\S+)?" (?P<status___int>\d{3}) (?P<size___int>\d+|-) "(?P<referrer>[^"]*)" "(?P<agent>[^"]*)"'
+//	{"address":"192.168.0.100","agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36","http":"HTTP/1.1","method":"GET","referrer":"-","size":1234,"status":200,"time":"2023-06-13T13:15:13Z","url":"/index.html","user":"-"}
 
 package main
 
