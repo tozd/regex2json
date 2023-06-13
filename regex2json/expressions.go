@@ -1,4 +1,4 @@
-// Package regex2json enables extracting data from strings into JSON using just regular expressions.
+// Package regex2json enables extracting data from text into JSON using just regular expressions.
 //
 // Expressions how to transform matched values into data are defined as capture groups' names.
 // Expressions can consist from a series of operators, called one after the other.
