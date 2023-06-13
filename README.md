@@ -7,8 +7,10 @@
 
 Main motivation for this tool is to convert traditional text-based (and line-based) logs to JSON
 for programs which do not support JSON logs themselves.
-It can be used in online manner (pipelining output of the program into regex2json) or offline manner
-(to process logs stored in files). But the tool is more general and can enable any workflow where
+It can be used in online manner (pipelining output of the program into regex2json, e.g., as log
+processor in [runit](http://smarden.org/runit/) and [dinit](https://gitlab.com/tozd/dinit) init systems)
+or offline manner (to process logs stored in files).
+But the tool is more general and can enable any workflow where
 you prefer operating on JSON instead of text. It works especially great when combined with
 [jq](https://jqlang.github.io/jq/).
 
@@ -93,6 +95,11 @@ on using regex2json as a Go package.
 ## Contributing
 
 Feel free to make a merge-request add more time layouts and/or operators.
+
+## Which regular expression syntax is supported?
+
+regex2json is implemented in Go and uses its [standard regexp package](https://pkg.go.dev/regexp/syntax)
+for parsing and compiling regular expressions.
 
 ## Related projects
 
