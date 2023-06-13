@@ -1,4 +1,3 @@
-//nolint:lll
 // regex2json reads lines from stdin, matching every line with the provided regexp.
 // If line matches, values from captured named groups are mapped into output JSON
 // which is then written out to stdout.

@@ -103,3 +103,9 @@ linters:
     # - tagliatelle
     # - wrapcheck
     # - zerologlint
+
+issues:
+  exclude-rules:
+    - path: main\.go
+      linters:
+        - lll
