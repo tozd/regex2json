@@ -11,7 +11,7 @@ RUN \
   make build-static && \
   mv regex2json /go/bin/regex2json
 
-FROM alpine3.18 AS debug
+FROM alpine:3.18 AS debug
 COPY --from=build /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=build /etc/passwd /etc/passwd
 COPY --from=build /etc/group /etc/group
