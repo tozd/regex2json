@@ -60,13 +60,13 @@ into the same one JSON output per line.
 
 Usage:
 
-```
+```sh
 regex2json <regexp>
 ```
 
 Example:
 
-```
+```sh
 $ while true; do LC_TIME=C date; sleep 1; done | regex2json "(?P<date___time__UnixDate__RFC3339>.+)"
 {"date":"2023-06-13T11:26:45Z"}
 {"date":"2023-06-13T11:26:46Z"}
