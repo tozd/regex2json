@@ -101,6 +101,12 @@ Feel free to make a merge-request add more time layouts and/or operators.
 regex2json is implemented in Go and uses its [standard regexp package](https://pkg.go.dev/regexp/syntax)
 for parsing and compiling regular expressions.
 
+## Why is syntax of transformations so awkward?
+
+This is a consequence of the limitation on which characters can be in a capture group name in Go
+(`[A-Za-z0-9_]+`).
+See [this issue](https://github.com/golang/go/issues/60784) for more details.
+
 ## Related projects
 
 - [jc](https://github.com/kellyjonbrazil/jc) – jc enables the same idea of converting text-based output of
