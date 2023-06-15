@@ -262,6 +262,7 @@ func TimeOperator(args ...string) (Op, error) {
 	if len(args) > 2 {         //nolint:gomnd
 		// Capture group names in Go support only a limited set of characters.
 		// So we replace the first _ with / which is common in time zone names.
+		// See: https://github.com/golang/go/issues/60784
 		formatLocation, err = time.LoadLocation(strings.Replace(args[2], "_", "/", 1))
 		if err != nil {
 			return nil, err
@@ -271,6 +272,7 @@ func TimeOperator(args ...string) (Op, error) {
 	if len(args) > 3 {          //nolint:gomnd
 		// Capture group names in Go support only a limited set of characters.
 		// So we replace the first _ with / which is common in time zone names.
+		// See: https://github.com/golang/go/issues/60784
 		parseLocation, err = time.LoadLocation(strings.Replace(args[3], "_", "/", 1))
 		if err != nil {
 			return nil, err
