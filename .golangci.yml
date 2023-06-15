@@ -46,10 +46,14 @@ linters:
     - dogsled
     - dupl
     - dupword
+    - durationcheck
     - errcheck
     - errchkjson
+    - errname
+    - errorlint
     - exhaustive
     - exportloopref
+    - gocheckcompilerdirectives
     - goconst
     - gocritic
     - godot
@@ -61,6 +65,7 @@ linters:
     - gosec
     - gosimple
     - govet
+    - importas
     - ineffassign
     - ireturn
     - lll
@@ -79,6 +84,7 @@ linters:
     - staticcheck
     - stylecheck
     - tagalign
+    - tagliatelle
     - tenv
     - testpackage
     - thelper
@@ -92,15 +98,9 @@ linters:
     # - bodyclose
     # - containedctx
     # - contextcheck
-    # - durationcheck
-    # - err113
-    # - errname
-    # - errorlint
-    # - gocheckcompilerdirectives
-    # - importas
+    # - goerr113
     # - noctx
     # - nosprintfhostport
-    # - tagliatelle
     # - wrapcheck
     # - zerologlint
 
