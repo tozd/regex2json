@@ -1,8 +1,6 @@
 linters-settings:
   errcheck:
     check-type-assertions: true
-    exclude-functions:
-      - io.WriteString
     enable-all: true
   gocritic:
     disabled-checks:
