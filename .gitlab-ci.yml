@@ -270,4 +270,3 @@ sync_releases:
 
   # We do not need build artifacts in this job.
   dependencies: []
-
