@@ -36,26 +36,26 @@ func CompileExpressions(r *regexp.Regexp) ([]*Expression, error) {
 }
 
 // Transform reads lines from in, matching every line with regexp r. If line matches, values from
-// captured named groups are mapped into output JSON which is then written out to out.
+// captured named groups are mapped into output JSON which is then written out to matched writer.
+// If the line does not match, it is written to unmatched writer.
 //
 // Capture groups' names are compiled into Expressions and describe how are matched values mapped
 // and transformed into output JSON. See [Expression] for details on the syntax and [Library] for
 // available operators.
 //
-// If logger is provided, any failed expression is logged to it while the rest of the output JSON
-// is still written out.
-// If logger is not provided, any failed expression is returned as error of the function,
-// aborting the transformation.
+// If logger is provided, any error (e.g., a failed expression) is logged to it while the rest
+// of the output JSON is still written out.
+// If logger is not provided, the error is returned as error of the function, aborting the transformation.
 //
 // If regexp r can match multiple times per line, all matches are combined together into
 // the same ome JSON output per line.
-func Transform(r *regexp.Regexp, in io.Reader, out io.Writer, logger *log.Logger) error {
+func Transform(r *regexp.Regexp, in io.Reader, matched, unmatched io.Writer, logger *log.Logger) error {
 	expressions, err := CompileExpressions(r)
 	if err != nil {
 		return fmt.Errorf("compiling expressions: %w", err)
 	}
 
-	encoder := json.NewEncoder(out)
+	encoder := json.NewEncoder(matched)
 	encoder.SetEscapeHTML(false)
 
 	scanner := bufio.NewScanner(in)
@@ -69,6 +69,14 @@ func Transform(r *regexp.Regexp, in io.Reader, out io.Writer, logger *log.Logger
 
 			matches := r.FindAllSubmatch(line, -1)
 			if len(matches) == 0 {
+				_, err := unmatched.Write(append(line, '\n'))
+				if err != nil {
+					if logger != nil {
+						logger.Printf(`failed to write unmatched line "%s": %s`, line, err)
+					} else {
+						return fmt.Errorf(`failed to write unmatched line "%s": %w`, line, err)
+					}
+				}
 				continue
 			}
 

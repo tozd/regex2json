@@ -33,11 +33,13 @@ func TestTransform(t *testing.T) {
 			_, err = in.WriteString(value)
 			require.NoError(t, err)
 			out := bytes.Buffer{}
+			outerr := bytes.Buffer{}
 			l := bytes.Buffer{}
 			warnLogger := log.New(&l, "warning: ", 0)
-			err = regex2json.Transform(r, &in, &out, warnLogger)
+			err = regex2json.Transform(r, &in, &out, &outerr, warnLogger)
 			require.NoError(t, err)
 			assert.Equal(t, tt.Expected+"\n", out.String())
+			assert.Equal(t, "", outerr.String())
 			lString := l.String()
 			if lString != "" {
 				for i, logLine := range strings.Split(strings.TrimRight(lString, "\n"), "\n") {
@@ -52,4 +54,21 @@ func TestTransform(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestUnmatchedTransform(t *testing.T) {
+	r, err := regexp.Compile(`test`)
+	require.NoError(t, err)
+	in := bytes.Buffer{}
+	_, err = in.WriteString(`foobar`)
+	require.NoError(t, err)
+	out := bytes.Buffer{}
+	outerr := bytes.Buffer{}
+	l := bytes.Buffer{}
+	warnLogger := log.New(&l, "warning: ", 0)
+	err = regex2json.Transform(r, &in, &out, &outerr, warnLogger)
+	require.NoError(t, err)
+	assert.Equal(t, "", out.String())
+	assert.Equal(t, "foobar\n", outerr.String())
+	assert.Equal(t, "", l.String())
 }

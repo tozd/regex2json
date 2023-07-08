@@ -1,13 +1,14 @@
 // Regex2json reads lines from stdin, matching every line with the provided regexp.
 // If line matches, values from captured named groups are mapped into output JSON
-// which is then written out to stdout.
+// which is then written out to stdout. If the line does not match, it is written
+// to stderr.
 //
 // Capture groups' names are compiled into Expressions and describe how are matched
 // values mapped and transformed into output JSON. See [regex2json.Expression] for
 // details on the syntax and [regex2json.Library] for available operators.
 //
-// Any failed expression is logged to stderr while the rest of the output JSON is still
-// written out.
+// Any error (e.g., a failed expression) is logged to stderr while the rest of the
+// output JSON is still written out.
 //
 // If regexp can match multiple times per line, all matches are combined together
 // into the same one JSON output per line.
@@ -59,7 +60,7 @@ func main() {
 		os.Exit(exitFailure)
 	}
 
-	err = regex2json.Transform(r, os.Stdin, os.Stdout, warnLogger)
+	err = regex2json.Transform(r, os.Stdin, os.Stdout, os.Stderr, warnLogger)
 	if err != nil {
 		errorLogger.Printf("%s", err)
 		os.Exit(exitFailure)
