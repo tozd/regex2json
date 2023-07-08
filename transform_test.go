@@ -57,10 +57,9 @@ func TestTransform(t *testing.T) {
 }
 
 func TestUnmatchedTransform(t *testing.T) {
-	r, err := regexp.Compile(`test`)
-	require.NoError(t, err)
+	r := regexp.MustCompile(`test`)
 	in := bytes.Buffer{}
-	_, err = in.WriteString(`foobar`)
+	_, err := in.WriteString(`foobar`)
 	require.NoError(t, err)
 	out := bytes.Buffer{}
 	outerr := bytes.Buffer{}
