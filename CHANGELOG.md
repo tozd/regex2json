@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2023-07-09
+
 ### Changed
 
 - Lines not matching the regexp are now written to stderr instead of being ignored.
@@ -17,7 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First public release.
 
-[unreleased]: https://gitlab.com/tozd/regex2json/-/compare/v0.1.0...main
+[unreleased]: https://gitlab.com/tozd/regex2json/-/compare/v0.2.0...main
+[0.2.0]: https://gitlab.com/tozd/regex2json/-/compare/v0.1.0...v0.2.0
 [0.1.0]: https://gitlab.com/tozd/regex2json/-/tags/v0.1.0
 
 <!-- markdownlint-disable-file MD024 -->
