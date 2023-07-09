@@ -90,7 +90,7 @@ $ echo '192.168.0.100 - - [13/Jun/2023:13:15:13 +0000] "GET /index.html HTTP/1.1
 
 ### As a package
 
-See full package documentation on [pkg.go.dev](https://pkg.go.dev/badge/gitlab.com/tozd/regex2json)
+See full package documentation on [pkg.go.dev](https://pkg.go.dev/gitlab.com/tozd/regex2json)
 on using regex2json as a Go package.
 
 ## Contributing
