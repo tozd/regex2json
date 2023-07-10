@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `LogDateTime`, `LogDateOnly`, `LogDateTimeMicroseconds`, and `LogTimeMicroseconds`
+  time layouts to parse standard Go log timestamps.
+
 ## [0.2.0] - 2023-07-09
 
 ### Changed
