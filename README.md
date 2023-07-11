@@ -23,17 +23,19 @@ Features:
 
 ## Installation
 
-This is a tool implemented in Go. You can use `go install` to install the latest stable (released) version:
-
-```sh
-go install gitlab.com/tozd/regex2json/cmd/regex2json@latest
-```
-
 [Releases page](https://gitlab.com/tozd/regex2json/-/releases)
 contains a list of stable versions. Each includes:
 
 - Statically compiled binaries.
 - Docker images.
+
+You should just download/use the latest one.
+
+The tool implemented in Go. You can also use `go install` to install the latest stable (released) version:
+
+```sh
+go install gitlab.com/tozd/regex2json/cmd/regex2json@latest
+```
 
 To install the latest development version (`main` branch):
 
