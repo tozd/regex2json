@@ -71,3 +71,35 @@ func TestUnmatchedTransform(t *testing.T) {
 	assert.Equal(t, "foobar\n", outerr.String())
 	assert.Equal(t, "", l.String())
 }
+
+func TestOptionalJSON(t *testing.T) {
+	r := regexp.MustCompile(`^\s*(?:(?P<___json___optional>\{.*\})|(?P<msg___optional>.+?))\s*$`)
+	for i, tt := range []struct {
+		Input    string
+		Expected string
+	}{
+		{`foobar`, `{"msg":"foobar"}`},
+		{``, ``},
+		{`{}`, `{}`},
+		{`{"x":1}`, `{"x":1}`},
+	} {
+		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			in := bytes.Buffer{}
+			_, err := in.WriteString(tt.Input)
+			require.NoError(t, err)
+			out := bytes.Buffer{}
+			outerr := bytes.Buffer{}
+			l := bytes.Buffer{}
+			warnLogger := log.New(&l, "warning: ", 0)
+			err = regex2json.Transform(r, &in, &out, &outerr, warnLogger)
+			require.NoError(t, err)
+			if tt.Expected == "" {
+				assert.Equal(t, tt.Expected, out.String())
+			} else {
+				assert.Equal(t, tt.Expected+"\n", out.String())
+			}
+			assert.Equal(t, "", outerr.String())
+			assert.Equal(t, "", l.String())
+		})
+	}
+}
