@@ -5,6 +5,7 @@
 package regex2json
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -336,6 +337,30 @@ func TimeOperator(args ...string) (Op, error) {
 	}, nil
 }
 
+// JSONOperator returns the json operator which parses input string as JSON object.
+//
+// It does not expect any arguments.
+func JSONOperator(args ...string) (Op, error) {
+	if len(args) > 0 {
+		return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
+	}
+	return func(in any) (any, error) {
+		s, skip, err := toStringOrSkip(in)
+		if err != nil {
+			return nil, err
+		}
+		if skip {
+			return in, nil
+		}
+		var obj map[string]interface{}
+		err = json.Unmarshal([]byte(s), &obj)
+		if err != nil {
+			return nil, fmt.Errorf(`unable to parse "%s" into JSON: %w`, s, err)
+		}
+		return obj, nil
+	}, nil
+}
+
 // Library is a map of all supported operators.
 var Library = map[string]func(args ...string) (Op, error){
 	"int":      IntOperator,
@@ -346,6 +371,7 @@ var Library = map[string]func(args ...string) (Op, error){
 	"optional": OptionalOperator,
 	"object":   ObjectOperator,
 	"time":     TimeOperator,
+	"json":     JSONOperator,
 }
 
 // Expression is a compiled expression which can be applied on a value
@@ -513,9 +539,17 @@ func NewExpression(expression string) (*Expression, error) {
 	// The first operator is implicitly the object. We make it explicit. We do not allow/support
 	// optionally explicit first operator so that we can support "object" as field name in an object.
 	// We also do not want to require that the first object operator should always be specified.
-	chain[0] = "object__" + chain[0]
+	if chain[0] == "" {
+		// The only way to skip the implicit operator is to start the expression with ___.
+		chain = chain[1:]
+	} else {
+		chain[0] = "object__" + chain[0]
+	}
 
 	for _, c := range chain {
+		if c == "" {
+			return nil, fmt.Errorf(`empty operator in expression "%s"`, expression)
+		}
 		ops := strings.Split(c, "__")
 		functor, ok := Library[ops[0]]
 		if !ok {

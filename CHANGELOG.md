@@ -7,18 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `json` operator to parse JSON strings.
+
 ## [0.4.0] - 2023-07-11
 
 ### Added
 
-- Added `ISO8601`, `ISO8601Milli`,`ISO8601Micro`, `ISO8601Nano`, and `ISO8601NanoZeros`
+- Add `ISO8601`, `ISO8601Milli`,`ISO8601Micro`, `ISO8601Nano`, and `ISO8601NanoZeros`
   time layouts.
 
 ## [0.3.0] - 2023-07-10
 
 ### Added
 
-- Added `LogDateTime`, `LogDateOnly`, `LogDateTimeMicroseconds`, and `LogTimeMicroseconds`
+- Add `LogDateTime`, `LogDateOnly`, `LogDateTimeMicroseconds`, and `LogTimeMicroseconds`
   time layouts to parse standard Go log timestamps.
 
 ## [0.2.0] - 2023-07-09
