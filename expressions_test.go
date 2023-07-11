@@ -54,6 +54,8 @@ var Tests = []struct {
 	{[]ExpValue{{"foo___time__DateTime__UnixDate__UTC__Europe_Ljubljana", "2023-06-09 22:21:17"}}, `{"foo":"Fri Jun  9 20:21:17 UTC 2023"}`, []string{}},
 	{[]ExpValue{{"obj___json", `{"x":1,"y":"v"}`}}, `{"obj":{"x":1,"y":"v"}}`, []string{}},
 	{[]ExpValue{{"___json", `{"x":1,"y":"v"}`}}, `{"x":1,"y":"v"}`, []string{}},
+	{[]ExpValue{{"obj___json___optional", ``}}, `{}`, []string{}},
+	{[]ExpValue{{"___json___optional", ``}}, `{}`, []string{}},
 }
 
 func TestExpression(t *testing.T) {
