@@ -67,6 +67,11 @@ var TimeLayouts = map[string]string{
 	"LogDateOnly":             "2006/01/02",
 	"LogDateTimeMicroseconds": "2006/01/02 15:04:05.000000",
 	"LogTimeMicroseconds":     "15:04:05.000000",
+	"ISO8601":                 "2006-01-02T15:04:05Z0700",
+	"ISO8601Milli":            "2006-01-02T15:04:05.000Z0700",
+	"ISO8601Micro":            "2006-01-02T15:04:05.000000Z0700",
+	"ISO8601Nano":             "2006-01-02T15:04:05.999999999Z0700",
+	"ISO8601NanoZeros":        "2006-01-02T15:04:05.000000000Z0700",
 }
 
 // IntOperator returns the bool operator which parses input string
