@@ -38,7 +38,11 @@ func TestTransform(t *testing.T) {
 			warnLogger := log.New(&l, "warning: ", 0)
 			err = regex2json.Transform(r, &in, &out, &outerr, warnLogger)
 			require.NoError(t, err)
-			assert.Equal(t, tt.Expected+"\n", out.String())
+			if tt.Expected == "" {
+				assert.Equal(t, tt.Expected, out.String())
+			} else {
+				assert.Equal(t, tt.Expected+"\n", out.String())
+			}
 			assert.Equal(t, "", outerr.String())
 			lString := l.String()
 			if lString != "" {

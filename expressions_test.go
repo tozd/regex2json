@@ -33,7 +33,7 @@ var Tests = []struct {
 	{[]ExpValue{{"foobar___int", "42"}}, `{"foobar":42}`, []string{}},
 	{[]ExpValue{{"foobar___float", "42.1"}}, `{"foobar":42.1}`, []string{}},
 	{[]ExpValue{{"foobar___null", ""}}, `{"foobar":null}`, []string{}},
-	{[]ExpValue{{"foobar___optional", ""}}, `{}`, []string{}},
+	{[]ExpValue{{"foobar___optional", ""}}, ``, []string{}},
 	{[]ExpValue{{"nested__foo___array___optional", ""}, {"nested__foo___array___optional", "y"}}, `{"nested":{"foo":["y"]}}`, []string{}},
 	{[]ExpValue{{"nested__foo___array___null", ""}, {"nested__foo___array___optional", "y"}}, `{"nested":{"foo":[null,"y"]}}`, []string{}},
 	{[]ExpValue{{"nested__foo___array___object__a", "x"}, {"nested__foo___array___object__b", "y"}}, `{"nested":{"foo":[{"a":"x"},{"b":"y"}]}}`, []string{}},
@@ -54,8 +54,8 @@ var Tests = []struct {
 	{[]ExpValue{{"foo___time__DateTime__UnixDate__UTC__Europe_Ljubljana", "2023-06-09 22:21:17"}}, `{"foo":"Fri Jun  9 20:21:17 UTC 2023"}`, []string{}},
 	{[]ExpValue{{"obj___json", `{"x":1,"y":"v"}`}}, `{"obj":{"x":1,"y":"v"}}`, []string{}},
 	{[]ExpValue{{"___json", `{"x":1,"y":"v"}`}}, `{"x":1,"y":"v"}`, []string{}},
-	{[]ExpValue{{"obj___json___optional", ``}}, `{}`, []string{}},
-	{[]ExpValue{{"___json___optional", ``}}, `{}`, []string{}},
+	{[]ExpValue{{"obj___json___optional", ``}}, ``, []string{}},
+	{[]ExpValue{{"___json___optional", ``}}, ``, []string{}},
 }
 
 func TestExpression(t *testing.T) {
@@ -73,9 +73,13 @@ func TestExpression(t *testing.T) {
 					continue
 				}
 			}
-			j, err := json.Marshal(output)
-			require.NoError(t, err)
-			assert.Equal(t, tt.Expected, string(j))
+			if len(output) == 0 {
+				assert.Equal(t, tt.Expected, "")
+			} else {
+				j, err := json.Marshal(output)
+				require.NoError(t, err)
+				assert.Equal(t, tt.Expected, string(j))
+			}
 		})
 	}
 }
