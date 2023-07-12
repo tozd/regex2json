@@ -74,6 +74,7 @@ var TimeLayouts = map[string]string{
 	"ISO8601Nano":             "2006-01-02T15:04:05.999999999Z0700",
 	"ISO8601NanoZeros":        "2006-01-02T15:04:05.000000000Z0700",
 	"LogPostgreSQL":           "2006-01-02 15:04:05.000 MST",
+	"DateTimeMilli":           "2006-01-02 15:04:05.000",
 }
 
 // IntOperator returns the bool operator which parses input string
