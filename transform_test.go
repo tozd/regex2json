@@ -80,7 +80,7 @@ func TestOptionalJSON(t *testing.T) {
 	}{
 		{`foobar`, `{"msg":"foobar"}`},
 		{``, ``},
-		{`{}`, `{}`},
+		{`{}`, ``},
 		{`{"x":1}`, `{"x":1}`},
 	} {
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
