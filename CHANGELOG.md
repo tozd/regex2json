@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2023-07-12
+
 ### Added
 
 - Add `LogPostgreSQL` time layout.
@@ -43,7 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First public release.
 
-[unreleased]: https://gitlab.com/tozd/regex2json/-/compare/v0.5.0...main
+[unreleased]: https://gitlab.com/tozd/regex2json/-/compare/v0.6.0...main
+[0.6.0]: https://gitlab.com/tozd/regex2json/-/compare/v0.5.0...v0.6.0
 [0.5.0]: https://gitlab.com/tozd/regex2json/-/compare/v0.4.0...v0.5.0
 [0.4.0]: https://gitlab.com/tozd/regex2json/-/compare/v0.3.0...v0.4.0
 [0.3.0]: https://gitlab.com/tozd/regex2json/-/compare/v0.2.0...v0.3.0
