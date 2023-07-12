@@ -100,6 +100,11 @@ func Transform(r *regexp.Regexp, in io.Reader, matched, unmatched io.Writer, log
 				}
 			}
 
+			// We do not output empty objects.
+			if len(output) == 0 {
+				continue
+			}
+
 			err := encoder.Encode(output)
 			if err != nil {
 				return fmt.Errorf("failed to write json: %w", err)
