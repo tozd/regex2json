@@ -42,40 +42,50 @@ func toStringOrSkip(in any) (string, bool, error) {
 // TimeLayouts is a map of time layouts supported by [TimeOperator].
 // RFC3339NanoZeros is the same as RFC3339Nano but without removing trailing zeros.
 var TimeLayouts = map[string]string{
-	"ANSIC":                   time.ANSIC,
-	"UnixDate":                time.UnixDate,
-	"RubyDate":                time.RubyDate,
-	"RFC822":                  time.RFC822,
-	"RFC822Z":                 time.RFC822Z,
-	"RFC850":                  time.RFC850,
-	"RFC1123":                 time.RFC1123,
-	"RFC1123Z":                time.RFC1123Z,
-	"RFC3339":                 time.RFC3339,
-	"RFC3339Milli":            "2006-01-02T15:04:05.000Z07:00",
-	"RFC3339Micro":            "2006-01-02T15:04:05.000000Z07:00",
-	"RFC3339Nano":             time.RFC3339Nano,
-	"RFC3339NanoZeros":        "2006-01-02T15:04:05.000000000Z07:00",
-	"Kitchen":                 time.Kitchen,
-	"Stamp":                   time.Stamp,
-	"StampMilli":              time.StampMilli,
-	"StampMicro":              time.StampMicro,
-	"StampNano":               time.StampNano,
-	"DateTime":                time.DateTime,
-	"DateOnly":                time.DateOnly,
-	"TimeOnly":                time.TimeOnly,
-	"Nginx":                   "02/Jan/2006:15:04:05 -0700",
-	"LogDateTime":             "2006/01/02 15:04:05",
-	"LogDateOnly":             "2006/01/02",
-	"LogDateTimeMicroseconds": "2006/01/02 15:04:05.000000",
-	"LogTimeMicroseconds":     "15:04:05.000000",
-	"ISO8601":                 "2006-01-02T15:04:05Z0700",
-	"ISO8601Milli":            "2006-01-02T15:04:05.000Z0700",
-	"ISO8601Micro":            "2006-01-02T15:04:05.000000Z0700",
-	"ISO8601Nano":             "2006-01-02T15:04:05.999999999Z0700",
-	"ISO8601NanoZeros":        "2006-01-02T15:04:05.000000000Z0700",
-	"LogPostgreSQL":           "2006-01-02 15:04:05.000 MST",
-	"DateTimeMilli":           "2006-01-02 15:04:05.000",
+	"ANSIC":                    time.ANSIC,
+	"UnixDate":                 time.UnixDate,
+	"RubyDate":                 time.RubyDate,
+	"RFC822":                   time.RFC822,
+	"RFC822Z":                  time.RFC822Z,
+	"RFC850":                   time.RFC850,
+	"RFC1123":                  time.RFC1123,
+	"RFC1123Z":                 time.RFC1123Z,
+	"RFC3339":                  time.RFC3339,
+	"RFC3339Milli":             "2006-01-02T15:04:05.000Z07:00",
+	"RFC3339Micro":             "2006-01-02T15:04:05.000000Z07:00",
+	"RFC3339Nano":              time.RFC3339Nano,
+	"RFC3339NanoZeros":         "2006-01-02T15:04:05.000000000Z07:00",
+	"Kitchen":                  time.Kitchen,
+	"Stamp":                    time.Stamp,
+	"StampMilli":               time.StampMilli,
+	"StampMicro":               time.StampMicro,
+	"StampNano":                time.StampNano,
+	"DateTime":                 time.DateTime,
+	"DateOnly":                 time.DateOnly,
+	"TimeOnly":                 time.TimeOnly,
+	"Nginx":                    "02/Jan/2006:15:04:05 -0700",
+	"LogDateTime":              "2006/01/02 15:04:05",
+	"LogDateOnly":              "2006/01/02",
+	"LogDateTimeMicroseconds":  "2006/01/02 15:04:05.000000",
+	"LogTimeMicroseconds":      "15:04:05.000000",
+	"ISO8601":                  "2006-01-02T15:04:05Z0700",
+	"ISO8601Milli":             "2006-01-02T15:04:05.000Z0700",
+	"ISO8601Micro":             "2006-01-02T15:04:05.000000Z0700",
+	"ISO8601Nano":              "2006-01-02T15:04:05.999999999Z0700",
+	"ISO8601NanoZeros":         "2006-01-02T15:04:05.000000000Z0700",
+	"LogPostgreSQL":            "2006-01-02 15:04:05.000 MST",
+	"DateTimeMilli":            "2006-01-02 15:04:05.000",
+	"DayMonthTime":             "_2 Jan 15:04:05",
+	"DayMonthTimeMilli":        "_2 Jan 15:04:05.000",
+	"WeekDayMonthDayTime":      "Mon Jan _2 15:04:05",
+	"WeekDayMonthDayTimeMilli": "Mon Jan _2 15:04:05.000",
 }
+
+var (
+	timeLayoutsWithoutYear  = layoutsWithoutYear(TimeLayouts)
+	timeLayoutsWithoutMonth = layoutsWithoutMonth(TimeLayouts)
+	timeLayoutsWithoutDay   = layoutsWithoutDay(TimeLayouts)
+)
 
 // IntOperator returns the bool operator which parses input string
 // into an int value using [strconv.ParseInt].
@@ -334,6 +344,22 @@ func TimeOperator(args ...string) (Op, error) {
 					return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s): unable to parse timezone "%s"`, s, parseLayout, args[0], zone)
 				}
 			}
+		}
+		// Some layouts do not contain all parts of the date. So we fill it in based on the current time.
+		if timeLayoutsWithoutYear[args[0]] || timeLayoutsWithoutMonth[args[0]] || timeLayoutsWithoutDay[args[0]] {
+			nyear, nmonth, nday := time.Now().In(t.Location()).Date()
+			year, month, day := t.Date()
+			hour, min, sec, nsec, loc := t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location()
+			if timeLayoutsWithoutYear[args[0]] {
+				year = nyear
+			}
+			if timeLayoutsWithoutMonth[args[0]] {
+				month = nmonth
+			}
+			if timeLayoutsWithoutDay[args[0]] {
+				day = nday
+			}
+			t = time.Date(year, month, day, hour, min, sec, nsec, loc)
 		}
 		return t.In(formatLocation).Format(formatLayout), nil
 	}, nil

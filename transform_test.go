@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -106,4 +107,21 @@ func TestOptionalJSON(t *testing.T) {
 			assert.Equal(t, "", l.String())
 		})
 	}
+}
+
+func TestLayoutWithoutYear(t *testing.T) {
+	r := regexp.MustCompile(`^(?P<time___time__Stamp__RFC3339Milli__UTC__UTC>.*)$`)
+	in := bytes.Buffer{}
+	_, err := in.WriteString(`Jan 2 15:04:05`)
+	require.NoError(t, err)
+	out := bytes.Buffer{}
+	outerr := bytes.Buffer{}
+	l := bytes.Buffer{}
+	warnLogger := log.New(&l, "warning: ", 0)
+	err = regex2json.Transform(r, &in, &out, &outerr, warnLogger)
+	require.NoError(t, err)
+	expected := fmt.Sprintf("%04d-01-02T15:04:05.000Z", time.Now().UTC().Year())
+	assert.Equal(t, `{"time":"`+expected+`"}`+"\n", out.String())
+	assert.Equal(t, "", outerr.String())
+	assert.Equal(t, "", l.String())
 }
