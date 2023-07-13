@@ -79,6 +79,8 @@ var TimeLayouts = map[string]string{
 	"DayMonthTimeMilli":        "_2 Jan 15:04:05.000",
 	"WeekDayMonthDayTime":      "Mon Jan _2 15:04:05",
 	"WeekDayMonthDayTimeMilli": "Mon Jan _2 15:04:05.000",
+	"DayMonthYearTime":         "_2 Jan 2006 15:04:05",
+	"DayMonthYearTimeMilli":    "_2 Jan 2006 15:04:05.000",
 }
 
 var (
