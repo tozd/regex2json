@@ -107,3 +107,6 @@ issues:
     - path: main\.go
       linters:
         - lll
+    - path: time_test\.go
+      linters:
+        - testpackage
