@@ -5,7 +5,14 @@ import (
 	"time"
 )
 
+// We determine if layout is not parsing year, month, or day by parsing layout with layout itself
+// and seeing if any of those has been parsed as 0 or 1 (that is documented behavior of time.Parse
+// when something is not being parsed). This works great for year (in layout it is 2006 so if it
+// is parsed as 0 we know it is not parsing year) and day (in layout it is 2 so if it is parsed
+// as 1 we know it) but not for month (because in layout is 1). So we have to modify month to
+// February/2 in timestamps as well to see if the month is parsed as 1 or 2.
 func timestampFromLayout(layout string) string {
+	// There are few parts in layouts with special meaning so we remove those.
 	timestamp := strings.ReplaceAll(layout, "_", "")
 	timestamp = strings.ReplaceAll(timestamp, "Z07:00", "Z")
 	timestamp = strings.ReplaceAll(timestamp, "Z0700", "Z")
