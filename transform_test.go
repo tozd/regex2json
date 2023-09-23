@@ -16,8 +16,13 @@ import (
 )
 
 func TestTransform(t *testing.T) {
+	t.Parallel()
+
 	for i, tt := range Tests {
+		tt := tt
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			t.Parallel()
+
 			// We have to use some prefix so that no line is an empty line.
 			re := "test"
 			value := "test"
@@ -62,6 +67,8 @@ func TestTransform(t *testing.T) {
 }
 
 func TestUnmatchedTransform(t *testing.T) {
+	t.Parallel()
+
 	r := regexp.MustCompile(`test`)
 	in := bytes.Buffer{}
 	_, err := in.WriteString(`foobar`)
@@ -78,6 +85,8 @@ func TestUnmatchedTransform(t *testing.T) {
 }
 
 func TestOptionalJSON(t *testing.T) {
+	t.Parallel()
+
 	r := regexp.MustCompile(`^\s*(?:(?P<___json___optional>\{.*\})|(?P<msg___optional>.+?))\s*$`)
 	for i, tt := range []struct {
 		Input    string
@@ -88,7 +97,11 @@ func TestOptionalJSON(t *testing.T) {
 		{`{}`, ``},
 		{`{"x":1}`, `{"x":1}`},
 	} {
+		tt := tt
+
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			t.Parallel()
+
 			in := bytes.Buffer{}
 			_, err := in.WriteString(tt.Input)
 			require.NoError(t, err)
@@ -110,6 +123,8 @@ func TestOptionalJSON(t *testing.T) {
 }
 
 func TestLayoutWithoutYear(t *testing.T) {
+	t.Parallel()
+
 	r := regexp.MustCompile(`^(?P<time___time__Stamp__RFC3339Milli__UTC__UTC>.*)$`)
 	in := bytes.Buffer{}
 	_, err := in.WriteString(`Jan 2 15:04:05`)

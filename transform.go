@@ -22,7 +22,7 @@ func CompileExpressions(r *regexp.Regexp) ([]*Expression, error) {
 		}
 
 		if expression == "" {
-			return nil, fmt.Errorf("capture group without expression")
+			return nil, fmt.Errorf("%w: expression missing", ErrInvalidCaptureGroup)
 		}
 
 		s, err := NewExpression(expression)
@@ -52,7 +52,7 @@ func CompileExpressions(r *regexp.Regexp) ([]*Expression, error) {
 func Transform(r *regexp.Regexp, in io.Reader, matched, unmatched io.Writer, logger *log.Logger) error {
 	expressions, err := CompileExpressions(r)
 	if err != nil {
-		return fmt.Errorf("compiling expressions: %w", err)
+		return fmt.Errorf("%w: %w", ErrCompilingExpressions, err)
 	}
 
 	encoder := json.NewEncoder(matched)

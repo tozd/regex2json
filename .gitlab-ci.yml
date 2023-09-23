@@ -11,6 +11,8 @@ variables:
   # We want full history so that "git describe" always works correctly.
   GIT_DEPTH: 0
   FF_ENABLE_BASH_EXIT_CODE_CHECK: "true"
+  # We always want to run with the Go version installed in a Docker image.
+  GOTOOLCHAIN: local
   DOCKER_PIPELINE_IMAGE_NAME: "$CI_REGISTRY_IMAGE/pipeline:$CI_PIPELINE_ID"
   DOCKER_DRIVER: overlay2
   DOCKER_BUILDKIT: "1"
@@ -19,11 +21,11 @@ variables:
 test:
   stage: test
 
-  image: golang:1.20-alpine3.18
+  image: golang:1.21-alpine3.18
 
   before_script:
     - apk --update add make gcc musl-dev
-    - (cd /go; go install gotest.tools/gotestsum@v1.10.1-0.20230612024452-6d535171af0b)
+    - (cd /go; go install gotest.tools/gotestsum@v1.10.1)
     - (cd /go; go install github.com/boumenot/gocover-cobertura@v1.2.0)
 
   script:
@@ -45,11 +47,11 @@ test:
 lint:
   stage: test
 
-  image: golang:1.20-alpine3.18
+  image: golang:1.21-alpine3.18
 
   before_script:
     - apk --update add make gcc musl-dev
-    - wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.53.1
+    - wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.54.2
 
   script:
     - make lint-ci
@@ -63,12 +65,12 @@ lint:
 fmt:
   stage: test
 
-  image: golang:1.20-alpine3.18
+  image: golang:1.21-alpine3.18
 
   before_script:
     - apk --update add make git gcc musl-dev grep
     - go install mvdan.cc/gofumpt@v0.5.0
-    - go install golang.org/x/tools/cmd/goimports@v0.9.3
+    - go install golang.org/x/tools/cmd/goimports@v0.13.0
 
   script:
     - make fmt-ci
@@ -87,7 +89,7 @@ lint_docs:
 audit:
   stage: test
 
-  image: golang:1.20-alpine3.18
+  image: golang:1.21-alpine3.18
 
   before_script:
     - apk --update add make git gcc musl-dev
@@ -99,7 +101,7 @@ audit:
 commits:
   stage: test
 
-  image: golang:1.20-alpine3.18
+  image: golang:1.21-alpine3.18
 
   variables:
     GIT_DEPTH: "0"
@@ -164,7 +166,7 @@ docker:
 push_branch:
   stage: deploy
 
-  image: docker:20
+  image: docker:23
 
   services:
     - docker:23-dind
@@ -195,7 +197,7 @@ push_branch:
 push_tag:
   stage: deploy
 
-  image: docker:20
+  image: docker:23
 
   services:
     - docker:23-dind
@@ -242,7 +244,7 @@ upload_binaries:
 publish:
   stage: deploy
 
-  image: golang:1.20-alpine3.18
+  image: golang:1.21-alpine3.18
 
   script:
     - GOPROXY=proxy.golang.org go list -m "gitlab.com/tozd/regex2json@$CI_COMMIT_REF_NAME"

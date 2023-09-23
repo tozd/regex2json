@@ -26,7 +26,7 @@ const (
 	optional optionalType = iota
 )
 
-var tz = timezone.New()
+var tz = timezone.New() //nolint:gochecknoglobals
 
 func toStringOrSkip(in any) (string, bool, error) {
 	s, ok := (in).(string)
@@ -34,14 +34,14 @@ func toStringOrSkip(in any) (string, bool, error) {
 		if in == nil || in == optional {
 			return "", true, nil
 		}
-		return "", false, fmt.Errorf("value is not a string")
+		return "", false, fmt.Errorf("%w: value is not a string, but %T", ErrUnexpectedType, in)
 	}
 	return s, false, nil
 }
 
 // TimeLayouts is a map of time layouts supported by [TimeOperator].
 // RFC3339NanoZeros is the same as RFC3339Nano but without removing trailing zeros.
-var TimeLayouts = map[string]string{
+var TimeLayouts = map[string]string{ //nolint: gochecknoglobals
 	"ANSIC":                    time.ANSIC,
 	"UnixDate":                 time.UnixDate,
 	"RubyDate":                 time.RubyDate,
@@ -84,9 +84,9 @@ var TimeLayouts = map[string]string{
 }
 
 var (
-	timeLayoutsWithoutYear  = layoutsWithoutYear(TimeLayouts)
-	timeLayoutsWithoutMonth = layoutsWithoutMonth(TimeLayouts)
-	timeLayoutsWithoutDay   = layoutsWithoutDay(TimeLayouts)
+	timeLayoutsWithoutYear  = layoutsWithoutYear(TimeLayouts)  //nolint: gochecknoglobals
+	timeLayoutsWithoutMonth = layoutsWithoutMonth(TimeLayouts) //nolint: gochecknoglobals
+	timeLayoutsWithoutDay   = layoutsWithoutDay(TimeLayouts)   //nolint: gochecknoglobals
 )
 
 // IntOperator returns the bool operator which parses input string
@@ -95,7 +95,7 @@ var (
 // It does not expect any arguments.
 func IntOperator(args ...string) (Op, error) {
 	if len(args) > 0 {
-		return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
+		return nil, fmt.Errorf("%w: %s", ErrUnexpectedArgument, strings.Join(args, ", "))
 	}
 	return func(in any) (any, error) {
 		s, skip, err := toStringOrSkip(in)
@@ -107,7 +107,7 @@ func IntOperator(args ...string) (Op, error) {
 		}
 		n, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return nil, fmt.Errorf(`unable to parse "%s" into int: %w`, s, err)
+			return nil, fmt.Errorf(`%w: unable to parse "%s" into int: %w`, ErrInvalidValue, s, err)
 		}
 		return n, nil
 	}, nil
@@ -119,7 +119,7 @@ func IntOperator(args ...string) (Op, error) {
 // It does not expect any arguments.
 func FloatOperator(args ...string) (Op, error) {
 	if len(args) > 0 {
-		return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
+		return nil, fmt.Errorf("%w: %s", ErrUnexpectedArgument, strings.Join(args, ", "))
 	}
 	return func(in any) (any, error) {
 		s, skip, err := toStringOrSkip(in)
@@ -131,7 +131,7 @@ func FloatOperator(args ...string) (Op, error) {
 		}
 		f, err := strconv.ParseFloat(s, 64)
 		if err != nil {
-			return nil, fmt.Errorf(`unable to parse "%s" into float: %w`, s, err)
+			return nil, fmt.Errorf(`%w: unable to parse "%s" into float: %w`, ErrInvalidValue, s, err)
 		}
 		return f, nil
 	}, nil
@@ -143,7 +143,7 @@ func FloatOperator(args ...string) (Op, error) {
 // It does not expect any arguments.
 func BoolOperator(args ...string) (Op, error) {
 	if len(args) > 0 {
-		return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
+		return nil, fmt.Errorf("%w: %s", ErrUnexpectedArgument, strings.Join(args, ", "))
 	}
 	return func(in any) (any, error) {
 		s, skip, err := toStringOrSkip(in)
@@ -155,7 +155,7 @@ func BoolOperator(args ...string) (Op, error) {
 		}
 		b, err := strconv.ParseBool(s)
 		if err != nil {
-			return nil, fmt.Errorf(`unable to parse "%s" into bool: %w`, s, err)
+			return nil, fmt.Errorf(`%w: unable to parse "%s" into bool: %w`, ErrInvalidValue, s, err)
 		}
 		return b, nil
 	}, nil
@@ -167,7 +167,7 @@ func BoolOperator(args ...string) (Op, error) {
 // It does not expect any arguments.
 func ArrayOperator(args ...string) (Op, error) {
 	if len(args) > 0 {
-		return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
+		return nil, fmt.Errorf("%w: %s", ErrUnexpectedArgument, strings.Join(args, ", "))
 	}
 	return func(in any) (any, error) {
 		// An opportunity to discard optional value.
@@ -184,7 +184,7 @@ func ArrayOperator(args ...string) (Op, error) {
 // It does not expect any arguments.
 func NullOperator(args ...string) (Op, error) {
 	if len(args) > 0 {
-		return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
+		return nil, fmt.Errorf("%w: %s", ErrUnexpectedArgument, strings.Join(args, ", "))
 	}
 	return func(in any) (any, error) {
 		s, skip, err := toStringOrSkip(in)
@@ -207,7 +207,7 @@ func NullOperator(args ...string) (Op, error) {
 // It does not expect any arguments.
 func OptionalOperator(args ...string) (Op, error) {
 	if len(args) > 0 {
-		return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
+		return nil, fmt.Errorf("%w: %s", ErrUnexpectedArgument, strings.Join(args, ", "))
 	}
 	return func(in any) (any, error) {
 		s, skip, err := toStringOrSkip(in)
@@ -229,7 +229,7 @@ func OptionalOperator(args ...string) (Op, error) {
 // and bar will return an object {"foo": {"bar": <in>}}.
 func ObjectOperator(args ...string) (Op, error) {
 	if len(args) == 0 {
-		return nil, fmt.Errorf("missing path arguments")
+		return nil, fmt.Errorf("%w: path", ErrMissingArgument)
 	}
 	return func(in any) (any, error) {
 		// We discard optional value.
@@ -266,19 +266,19 @@ func ObjectOperator(args ...string) (Op, error) {
 //   - parsing location (default [time.Local])
 func TimeOperator(args ...string) (Op, error) {
 	if len(args) == 0 {
-		return nil, fmt.Errorf("missing parse layout argument")
+		return nil, fmt.Errorf("%w: parse layout", ErrMissingArgument)
 	} else if len(args) > 4 { //nolint:gomnd
-		return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args[4:], ", "))
+		return nil, fmt.Errorf("%w: %s", ErrUnexpectedArgument, strings.Join(args[4:], ", "))
 	}
 	parseLayout, ok := TimeLayouts[args[0]]
 	if !ok {
-		return nil, fmt.Errorf("unknown format: %s", args[0])
+		return nil, fmt.Errorf("%w: unknown format: %s", ErrInvalidValue, args[0])
 	}
 	formatLayout := TimeLayouts["RFC3339Milli"] // Default.
 	if len(args) > 1 {
 		formatLayout, ok = TimeLayouts[args[1]]
 		if !ok {
-			return nil, fmt.Errorf("unknown format layout: %s", args[1])
+			return nil, fmt.Errorf("%w: unknown format layout: %s", ErrInvalidValue, args[1])
 		}
 	}
 	var err error
@@ -289,9 +289,10 @@ func TimeOperator(args ...string) (Op, error) {
 		// See: https://github.com/golang/go/issues/60784
 		formatLocation, err = time.LoadLocation(strings.Replace(args[2], "_", "/", 1))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf(`%w: location "%s": %w`, ErrInvalidValue, args[2], err)
 		}
 	}
+	//nolint:gosmopolitan
 	parseLocation := time.Local // Default.
 	if len(args) > 3 {          //nolint:gomnd
 		// Capture group names in Go support only a limited set of characters.
@@ -299,7 +300,7 @@ func TimeOperator(args ...string) (Op, error) {
 		// See: https://github.com/golang/go/issues/60784
 		parseLocation, err = time.LoadLocation(strings.Replace(args[3], "_", "/", 1))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf(`%w: location "%s": %w`, ErrInvalidValue, args[3], err)
 		}
 	}
 	return func(in any) (any, error) {
@@ -312,7 +313,7 @@ func TimeOperator(args ...string) (Op, error) {
 		}
 		t, err := time.ParseInLocation(parseLayout, s, parseLocation)
 		if err != nil {
-			return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s) in location "%s": %w`, s, parseLayout, args[0], parseLocation, err)
+			return nil, fmt.Errorf(`%w: unable to parse "%s" into time with layout "%s" (%s) in location "%s": %w`, ErrInvalidValue, s, parseLayout, args[0], parseLocation, err)
 		}
 		// Parsing might not succeed in using timezone abbreviation when present (when it does not match parseLocation).
 		// In such case time.ParseInLocation uses a fabricated location with the given timezone abbreviation and a zero
@@ -323,12 +324,15 @@ func TimeOperator(args ...string) (Op, error) {
 			if err == nil {
 				t, err = time.ParseInLocation(parseLayout, s, l)
 				if err != nil {
-					return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s) in location "%s": %w`, s, parseLayout, args[0], l, err)
+					return nil, fmt.Errorf(`%w: unable to parse "%s" into time with layout "%s" (%s) in location "%s": %w`, ErrInvalidValue, s, parseLayout, args[0], l, err)
 				}
 			} else {
 				zones, err := tz.GetTimezones(zone)
 				if err != nil {
-					return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s): unable to parse timezone "%s": %w`, s, parseLayout, args[0], zone, err)
+					return nil, fmt.Errorf(
+						`%w: unable to parse "%s" into time with layout "%s" (%s): unable to parse timezone "%s": %w`,
+						ErrInvalidValue, s, parseLayout, args[0], zone, err,
+					)
 				}
 				found := false
 				for _, z := range zones {
@@ -336,14 +340,14 @@ func TimeOperator(args ...string) (Op, error) {
 					if err == nil {
 						t, err = time.ParseInLocation(parseLayout, s, l)
 						if err != nil {
-							return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s) in location "%s": %w`, s, parseLayout, args[0], l, err)
+							return nil, fmt.Errorf(`%w: unable to parse "%s" into time with layout "%s" (%s) in location "%s": %w`, ErrInvalidValue, s, parseLayout, args[0], l, err)
 						}
 						found = true
 						break
 					}
 				}
 				if !found {
-					return nil, fmt.Errorf(`unable to parse "%s" into time with layout "%s" (%s): unable to parse timezone "%s"`, s, parseLayout, args[0], zone)
+					return nil, fmt.Errorf(`%w: unable to parse "%s" into time with layout "%s" (%s): unable to parse timezone "%s"`, ErrInvalidValue, s, parseLayout, args[0], zone)
 				}
 			}
 		}
@@ -372,7 +376,7 @@ func TimeOperator(args ...string) (Op, error) {
 // It does not expect any arguments.
 func JSONOperator(args ...string) (Op, error) {
 	if len(args) > 0 {
-		return nil, fmt.Errorf("unexpected arguments: %s", strings.Join(args, ", "))
+		return nil, fmt.Errorf("%w: %s", ErrUnexpectedArgument, strings.Join(args, ", "))
 	}
 	return func(in any) (any, error) {
 		s, skip, err := toStringOrSkip(in)
@@ -385,14 +389,14 @@ func JSONOperator(args ...string) (Op, error) {
 		var obj map[string]interface{}
 		err = json.Unmarshal([]byte(s), &obj)
 		if err != nil {
-			return nil, fmt.Errorf(`unable to parse "%s" into JSON: %w`, s, err)
+			return nil, fmt.Errorf(`%w: unable to parse "%s" into JSON: %w`, ErrInvalidValue, s, err)
 		}
 		return obj, nil
 	}, nil
 }
 
 // Library is a map of all supported operators.
-var Library = map[string]func(args ...string) (Op, error){
+var Library = map[string]func(args ...string) (Op, error){ //nolint:gochecknoglobals
 	"int":      IntOperator,
 	"float":    FloatOperator,
 	"bool":     BoolOperator,
@@ -461,7 +465,7 @@ func (s Expression) Apply(output map[string]any, value string) error {
 		return nil
 	}
 	// The first operator is the object, so we know the type of in.
-	return s.merge(output, in.(map[string]any))
+	return s.merge(output, in.(map[string]any)) //nolint:forcetypeassert
 }
 
 func (s Expression) merge(left map[string]any, right map[string]any) error {
@@ -500,7 +504,7 @@ func (s Expression) merge(left map[string]any, right map[string]any) error {
 					}
 				default:
 					// Left is a map, right is not a map nor a slice. We do not know how to merge that.
-					return fmt.Errorf("%s: type mismatch", key)
+					return fmt.Errorf("%s: %w", key, ErrTypeMismatch)
 				}
 			case []any:
 				switch rv := rightValue.(type) {
@@ -538,7 +542,7 @@ func (s Expression) merge(left map[string]any, right map[string]any) error {
 					// Left is not a map nor a slice, right is a slice. We prepend it to the start of right.
 					left[key] = append([]any{lv}, rv...)
 				default:
-					return fmt.Errorf("%s: value already exist", key)
+					return fmt.Errorf("%s: %w", key, ErrValueAlreadyExist)
 				}
 			}
 		} else {
@@ -557,7 +561,7 @@ func (s Expression) String() string {
 // NewExpression compiles the expression into the Expression.
 func NewExpression(expression string) (*Expression, error) {
 	if expression == "" {
-		return nil, fmt.Errorf(`empty expression`)
+		return nil, ErrEmptyExpression
 	}
 
 	res := &Expression{
@@ -578,16 +582,16 @@ func NewExpression(expression string) (*Expression, error) {
 
 	for _, c := range chain {
 		if c == "" {
-			return nil, fmt.Errorf(`empty operator in expression "%s"`, expression)
+			return nil, fmt.Errorf(`%w: expression "%s"`, ErrEmptyOperator, expression)
 		}
 		ops := strings.Split(c, "__")
 		functor, ok := Library[ops[0]]
 		if !ok {
-			return nil, fmt.Errorf(`unknown operator "%s" for expression "%s"`, ops[0], expression)
+			return nil, fmt.Errorf(`%w: "%s" for expression "%s"`, ErrInvalidOperator, ops[0], expression)
 		}
 		f, err := functor(ops[1:]...)
 		if err != nil {
-			return nil, fmt.Errorf(`compiling operator "%s" for expression "%s": %w`, ops[0], expression, err)
+			return nil, fmt.Errorf(`%w: "%s" for expression "%s": %w`, ErrCompilingOperator, ops[0], expression, err)
 		}
 		// We prepend the new operator, so that in Apply we call from the last to the first operator.
 		res.fns = append([]Op{f}, res.fns...)

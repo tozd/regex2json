@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var testLayouts = map[string]string{
+var testLayouts = map[string]string{ //nolint:gochecknoglobals
 	"ANSIC":       time.ANSIC,
 	"UnixDate":    time.UnixDate,
 	"RubyDate":    time.RubyDate,
@@ -29,6 +29,8 @@ var testLayouts = map[string]string{
 }
 
 func TestLayoutsWithoutYear(t *testing.T) {
+	t.Parallel()
+
 	assert.Equal(t, map[string]bool{
 		"Kitchen":    true,
 		"Stamp":      true,
@@ -40,6 +42,8 @@ func TestLayoutsWithoutYear(t *testing.T) {
 }
 
 func TestLayoutsWithoutMonth(t *testing.T) {
+	t.Parallel()
+
 	assert.Equal(t, map[string]bool{
 		"Kitchen":  true,
 		"TimeOnly": true,
@@ -47,6 +51,8 @@ func TestLayoutsWithoutMonth(t *testing.T) {
 }
 
 func TestLayoutsWithoutDay(t *testing.T) {
+	t.Parallel()
+
 	assert.Equal(t, map[string]bool{
 		"Kitchen":  true,
 		"TimeOnly": true,

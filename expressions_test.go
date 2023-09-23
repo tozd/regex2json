@@ -16,7 +16,7 @@ type ExpValue struct {
 	Value      string
 }
 
-var Tests = []struct {
+var Tests = []struct { //nolint: gochecknoglobals
 	Exps     []ExpValue
 	Expected string
 	Errors   []string
@@ -59,8 +59,14 @@ var Tests = []struct {
 }
 
 func TestExpression(t *testing.T) {
+	t.Parallel()
+
 	for i, tt := range Tests {
+		tt := tt
+
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			t.Parallel()
+
 			output := map[string]any{}
 			errI := 0
 			for _, ev := range tt.Exps {
