@@ -71,7 +71,7 @@ func TestExpression(t *testing.T) {
 			errI := 0
 			for _, ev := range tt.Exps {
 				e, err := regex2json.NewExpression(ev.Expression)
-				require.NoError(t, err)
+				require.NoError(t, err, "% -+#.1v", err)
 				err = e.Apply(output, ev.Value)
 				if err != nil && errI < len(tt.Errors) {
 					assert.EqualError(t, err, tt.Errors[errI])

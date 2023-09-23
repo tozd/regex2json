@@ -43,7 +43,7 @@ func TestTransform(t *testing.T) {
 			l := bytes.Buffer{}
 			warnLogger := log.New(&l, "warning: ", 0)
 			err = regex2json.Transform(r, &in, &out, &outerr, warnLogger)
-			require.NoError(t, err)
+			require.NoError(t, err, "% -+#.1v", err)
 			if tt.Expected == "" {
 				assert.Equal(t, tt.Expected, out.String())
 			} else {
@@ -78,7 +78,7 @@ func TestUnmatchedTransform(t *testing.T) {
 	l := bytes.Buffer{}
 	warnLogger := log.New(&l, "warning: ", 0)
 	err = regex2json.Transform(r, &in, &out, &outerr, warnLogger)
-	require.NoError(t, err)
+	require.NoError(t, err, "% -+#.1v", err)
 	assert.Equal(t, "", out.String())
 	assert.Equal(t, "foobar\n", outerr.String())
 	assert.Equal(t, "", l.String())
@@ -110,7 +110,7 @@ func TestOptionalJSON(t *testing.T) {
 			l := bytes.Buffer{}
 			warnLogger := log.New(&l, "warning: ", 0)
 			err = regex2json.Transform(r, &in, &out, &outerr, warnLogger)
-			require.NoError(t, err)
+			require.NoError(t, err, "% -+#.1v", err)
 			if tt.Expected == "" {
 				assert.Equal(t, tt.Expected, out.String())
 			} else {
@@ -134,7 +134,7 @@ func TestLayoutWithoutYear(t *testing.T) {
 	l := bytes.Buffer{}
 	warnLogger := log.New(&l, "warning: ", 0)
 	err = regex2json.Transform(r, &in, &out, &outerr, warnLogger)
-	require.NoError(t, err)
+	require.NoError(t, err, "% -+#.1v", err)
 	expected := fmt.Sprintf("%04d-01-02T15:04:05.000Z", time.Now().UTC().Year())
 	assert.Equal(t, `{"time":"`+expected+`"}`+"\n", out.String())
 	assert.Equal(t, "", outerr.String())
