@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2023-09-23
+
 ### Changed
 
 - Improve errors.
@@ -75,7 +77,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First public release.
 
-[unreleased]: https://gitlab.com/tozd/regex2json/-/compare/v0.10.0...main
+[unreleased]: https://gitlab.com/tozd/regex2json/-/compare/v0.11.0...main
+[0.11.0]: https://gitlab.com/tozd/regex2json/-/compare/v0.10.0...v0.11.0
 [0.10.0]: https://gitlab.com/tozd/regex2json/-/compare/v0.9.0...v0.10.0
 [0.9.0]: https://gitlab.com/tozd/regex2json/-/compare/v0.8.0...v0.9.0
 [0.8.0]: https://gitlab.com/tozd/regex2json/-/compare/v0.7.0...v0.8.0
