@@ -2,3 +2,4 @@ tests.xml
 coverage.*
 codeclimate.json
 /regex2json
+/keys.txt

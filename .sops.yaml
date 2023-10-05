@@ -1,0 +1,3 @@
+creation_rules:
+  - path_regex: ^\.gitlab-conf\.yml$
+    age: age1kpu990vk9xxjzpx882jf6c95ylnuelxeg8ns9xnhvmm7k8ds3fxqjynusy
