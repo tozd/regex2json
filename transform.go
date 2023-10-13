@@ -60,9 +60,7 @@ func Transform(r *regexp.Regexp, in io.Reader, matched, unmatched io.Writer, log
 
 	scanner := bufio.NewScanner(in)
 
-	res := true
-	for res {
-		res = scanner.Scan()
+	for scanner.Scan() {
 		line := scanner.Bytes()
 		if len(line) > 0 {
 			output := map[string]any{}
