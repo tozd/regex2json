@@ -3,7 +3,7 @@
 # for the Dockerfile frontend image to be pulled.
 FROM golang:1.21-alpine3.18 AS build
 
-RUN apk --update add make git gcc musl-dev tzdata && \
+RUN apk --update add make bash git gcc musl-dev tzdata && \
   adduser -D -H -g "" -s /sbin/nologin -u 1000 user
 COPY . /go/src/regex2json
 WORKDIR /go/src/regex2json
