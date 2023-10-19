@@ -21,7 +21,7 @@ variables:
 test:
   stage: test
 
-  image: golang:1.21-alpine3.18
+  image: golang:$IMAGE_TAG
 
   before_script:
     - apk --update add make bash gcc musl-dev
@@ -45,6 +45,10 @@ test:
     expire_in: never
 
   coverage: '/coverage: \d+\.\d+% of statements/'
+
+  parallel:
+    matrix:
+      - IMAGE_TAG: ['1.18-alpine3.17', '1.19-alpine3.18', '1.20-alpine3.18', '1.21-alpine3.18']
 
 lint:
   stage: test

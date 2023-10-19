@@ -92,6 +92,14 @@ $ echo '192.168.0.100 - - [13/Jun/2023:13:15:13 +0000] "GET /index.html HTTP/1.1
 
 ### As a package
 
+This is also a Go package. You can add it to your project using `go get`:
+
+```sh
+go get gitlab.com/tozd/regex2json
+```
+
+It requires Go 1.18 or newer.
+
 See full package documentation on [pkg.go.dev](https://pkg.go.dev/gitlab.com/tozd/regex2json)
 on using regex2json as a Go package.
 
