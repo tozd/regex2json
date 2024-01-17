@@ -305,7 +305,7 @@ variables:
     key: SOPS_AGE_KEY_FILE
     masked: false
     protected: true
-    raw: false
+    raw: true
     # sops:enc
     value: ENC[AES256_GCM,data:MCOHEgZBrffWryl3ZhHRgPmdcJNhE1cZaBNdZgMPNWDj/R2mm078xqruQR979T7uD6UNMF6YyNnZZHm83RJv8NKu1+6d5WH3Yhcl2GLxM3k3n4SPQ4R5kE9tw6n/mM0cwg2a8cmyXAHOAwQgtIBgaejqOsU/yv2o8T/wkBYwPW5Q3HltR5cdkbsXPVz/O0JmxSI4kL2muGMep0Zd5KCJj2VzVCEdcGERKT3pwENJvK2OWD+03JeGMFlEBZuq,iv:fZzwXhRr6EOQqtDnslTGmJI08YPFE0w8qgcJClAnZRw=,tag:ICzR3ud8FYnXi5YsBdBFmw==,type:str]
     variable_type: file
