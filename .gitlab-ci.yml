@@ -14,7 +14,7 @@ variables:
   # We always want to run with the Go version installed in a Docker image.
   GOTOOLCHAIN: local
   DOCKER_PIPELINE_IMAGE_NAME: "$CI_REGISTRY_IMAGE/pipeline:$CI_PIPELINE_ID"
-  DOCKER_DRIVER: overlay2
+  DOCKER_DRIVER: overlayfs
   DOCKER_BUILDKIT: "1"
   PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic"
 
@@ -121,14 +121,19 @@ commits:
 docker:
   stage: build
 
-  image: docker:23-git
+  image: docker:28-git
 
   services:
-    - docker:23-dind
+    - name: docker:28-dind
+      command:
+        - "--feature"
+        - "containerd-snapshotter=true"
 
   before_script:
     - docker info
     - echo "$CI_JOB_TOKEN" | docker login --username gitlab-ci-token --password-stdin "$CI_REGISTRY"
+    - docker run --privileged --rm tonistiigi/binfmt --uninstall "qemu-*"
+    - docker run --privileged --rm tonistiigi/binfmt:qemu-v9.2.2 --install arm64
 
   script:
     - export BUILD_TIMESTAMP="$(date -u +%FT%TZ)"
@@ -136,6 +141,7 @@ docker:
     - export VERSION="$(git describe --tags --always --dirty=+)"
     - echo VERSION "$VERSION"
     - docker build
+        --platform linux/amd64,linux/arm64
         --target production
         --tag "$DOCKER_PIPELINE_IMAGE_NAME"
         --tag "$CI_REGISTRY_IMAGE/commit:$CI_COMMIT_SHA"
@@ -144,6 +150,7 @@ docker:
         --label "org.opencontainers.image.revision=$CI_COMMIT_SHA"
         --label "org.opencontainers.image.url=$CI_PROJECT_URL" .
     - docker build
+        --platform linux/amd64,linux/arm64
         --target debug
         --tag "$DOCKER_PIPELINE_IMAGE_NAME-debug"
         --tag "$CI_REGISTRY_IMAGE/commit:$CI_COMMIT_SHA-debug"
@@ -155,8 +162,11 @@ docker:
     - docker push "$CI_REGISTRY_IMAGE/commit:$CI_COMMIT_SHA"
     - docker push "$DOCKER_PIPELINE_IMAGE_NAME-debug"
     - docker push "$CI_REGISTRY_IMAGE/commit:$CI_COMMIT_SHA-debug"
-    - export IMAGE_ID=$(docker create "$DOCKER_PIPELINE_IMAGE_NAME")
+    - export IMAGE_ID=$(docker create --platform linux/amd64 "$DOCKER_PIPELINE_IMAGE_NAME")
     - docker cp "$IMAGE_ID:/regex2json" regex2json-linux-amd64
+    - docker rm "$IMAGE_ID"
+    - export IMAGE_ID=$(docker create --platform linux/arm64 "$DOCKER_PIPELINE_IMAGE_NAME")
+    - docker cp "$IMAGE_ID:/regex2json" regex2json-linux-arm64
     - docker rm "$IMAGE_ID"
 
   artifacts:
@@ -164,6 +174,7 @@ docker:
     name: binaries
     paths:
       - regex2json-linux-amd64
+      - regex2json-linux-arm64
     expire_in: never
 
   # We want to run it as soon as possible and do not wait for test stage to finish.
@@ -172,10 +183,13 @@ docker:
 push_branch:
   stage: deploy
 
-  image: docker:23
+  image: docker:28-git
 
   services:
-    - docker:23-dind
+    - name: docker:28-dind
+      command:
+        - "--feature"
+        - "containerd-snapshotter=true"
 
   before_script:
     - docker info
@@ -203,10 +217,13 @@ push_branch:
 push_tag:
   stage: deploy
 
-  image: docker:23
+  image: docker:28-git
 
   services:
-    - docker:23-dind
+    - name: docker:28-dind
+      command:
+        - "--feature"
+        - "containerd-snapshotter=true"
 
   before_script:
     - docker info
@@ -239,6 +256,7 @@ upload_binaries:
 
   script:
     - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file regex2json-linux-amd64 "$PACKAGE_REGISTRY_URL/linux-amd64/${CI_COMMIT_REF_NAME#v}/regex2json"'
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file regex2json-linux-arm64 "$PACKAGE_REGISTRY_URL/linux-arm64/${CI_COMMIT_REF_NAME#v}/regex2json"'
 
   rules:
     # Only on protected tags. Protected tags start with "v".
