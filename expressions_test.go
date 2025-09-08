@@ -62,8 +62,6 @@ func TestExpression(t *testing.T) {
 	t.Parallel()
 
 	for i, tt := range Tests {
-		tt := tt
-
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			t.Parallel()
 

@@ -98,7 +98,7 @@ This is also a Go package. You can add it to your project using `go get`:
 go get gitlab.com/tozd/regex2json
 ```
 
-It requires Go 1.20 or newer.
+It requires Go 1.23 or newer.
 
 See full package documentation on [pkg.go.dev](https://pkg.go.dev/gitlab.com/tozd/regex2json)
 on using regex2json as a Go package.
