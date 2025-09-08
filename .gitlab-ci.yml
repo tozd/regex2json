@@ -121,7 +121,7 @@ commits:
 docker:
   stage: build
 
-  image: docker:28-git
+  image: docker:28-cli
 
   services:
     - name: docker:28-dind
@@ -183,7 +183,7 @@ docker:
 push_branch:
   stage: deploy
 
-  image: docker:28-git
+  image: docker:28-cli
 
   services:
     - name: docker:28-dind
@@ -217,7 +217,7 @@ push_branch:
 push_tag:
   stage: deploy
 
-  image: docker:28-git
+  image: docker:28-cli
 
   services:
     - name: docker:28-dind
