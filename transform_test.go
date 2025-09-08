@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -20,7 +21,7 @@ func TestTransform(t *testing.T) {
 
 	for i, tt := range Tests {
 		tt := tt
-		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			t.Parallel()
 
 			// We have to use some prefix so that no line is an empty line.
@@ -56,7 +57,7 @@ func TestTransform(t *testing.T) {
 					if i < len(tt.Errors) {
 						assert.True(t, strings.HasSuffix(logLine, tt.Errors[i]), "expected: %s, got: %s", tt.Errors[i], logLine)
 					} else {
-						assert.Fail(t, fmt.Sprintf("unexpected log message: %s", logLine))
+						assert.Fail(t, "unexpected log message: "+logLine)
 					}
 				}
 			} else if len(tt.Errors) > 0 {
@@ -99,7 +100,7 @@ func TestOptionalJSON(t *testing.T) {
 	} {
 		tt := tt
 
-		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			t.Parallel()
 
 			in := bytes.Buffer{}

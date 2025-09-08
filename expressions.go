@@ -267,7 +267,7 @@ func ObjectOperator(args ...string) (Op, error) {
 func TimeOperator(args ...string) (Op, error) {
 	if len(args) == 0 {
 		return nil, fmt.Errorf("%w: parse layout", ErrMissingArgument)
-	} else if len(args) > 4 { //nolint:gomnd
+	} else if len(args) > 4 { //nolint:mnd
 		return nil, fmt.Errorf("%w: %s", ErrUnexpectedArgument, strings.Join(args[4:], ", "))
 	}
 	parseLayout, ok := TimeLayouts[args[0]]
@@ -283,7 +283,7 @@ func TimeOperator(args ...string) (Op, error) {
 	}
 	var err error
 	formatLocation := time.UTC // Default.
-	if len(args) > 2 {         //nolint:gomnd
+	if len(args) > 2 {         //nolint:mnd
 		// Capture group names in Go support only a limited set of characters.
 		// So we replace the first _ with / which is common in time zone names.
 		// See: https://github.com/golang/go/issues/60784
@@ -294,7 +294,7 @@ func TimeOperator(args ...string) (Op, error) {
 	}
 	//nolint:gosmopolitan
 	parseLocation := time.Local // Default.
-	if len(args) > 3 {          //nolint:gomnd
+	if len(args) > 3 {          //nolint:mnd
 		// Capture group names in Go support only a limited set of characters.
 		// So we replace the first _ with / which is common in time zone names.
 		// See: https://github.com/golang/go/issues/60784
@@ -355,7 +355,7 @@ func TimeOperator(args ...string) (Op, error) {
 		if timeLayoutsWithoutYear[args[0]] || timeLayoutsWithoutMonth[args[0]] || timeLayoutsWithoutDay[args[0]] {
 			nyear, nmonth, nday := time.Now().In(t.Location()).Date()
 			year, month, day := t.Date()
-			hour, min, sec, nsec, loc := t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location()
+			hour, minute, sec, nsec, loc := t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location()
 			if timeLayoutsWithoutYear[args[0]] {
 				year = nyear
 			}
@@ -365,7 +365,7 @@ func TimeOperator(args ...string) (Op, error) {
 			if timeLayoutsWithoutDay[args[0]] {
 				day = nday
 			}
-			t = time.Date(year, month, day, hour, min, sec, nsec, loc)
+			t = time.Date(year, month, day, hour, minute, sec, nsec, loc)
 		}
 		return t.In(formatLocation).Format(formatLayout), nil
 	}, nil
@@ -465,7 +465,7 @@ func (s Expression) Apply(output map[string]any, value string) error {
 		return nil
 	}
 	// The first operator is the object, so we know the type of in.
-	return s.merge(output, in.(map[string]any)) //nolint:forcetypeassert
+	return s.merge(output, in.(map[string]any)) //nolint:forcetypeassert,errcheck
 }
 
 func (s Expression) merge(left map[string]any, right map[string]any) error {

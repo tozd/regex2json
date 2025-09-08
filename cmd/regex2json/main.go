@@ -49,7 +49,7 @@ func main() {
 	errorLogger := log.New(os.Stderr, "error: ", 0)
 	warnLogger := log.New(os.Stderr, "warning: ", 0)
 
-	if len(os.Args) != 2 { //nolint:gomnd
+	if len(os.Args) != 2 { //nolint:mnd
 		errorLogger.Printf("invalid number of arguments, got %d, expected 1", len(os.Args)-1)
 		os.Exit(exitFailure)
 	}

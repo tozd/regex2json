@@ -2,7 +2,7 @@ package regex2json_test
 
 import (
 	"encoding/json"
-	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -64,7 +64,7 @@ func TestExpression(t *testing.T) {
 	for i, tt := range Tests {
 		tt := tt
 
-		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			t.Parallel()
 
 			output := map[string]any{}
