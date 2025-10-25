@@ -79,7 +79,7 @@ fmt:
   before_script:
     - apk --update add make bash git gcc musl-dev grep
     - go install mvdan.cc/gofumpt@v0.9.1
-    - go install golang.org/x/tools/cmd/goimports@v0.36.0
+    - go install golang.org/x/tools/cmd/goimports@v0.37.0
 
   script:
     - make fmt-ci
@@ -102,7 +102,7 @@ audit:
 
   before_script:
     - apk --update add make bash git gcc musl-dev
-    - go install github.com/sonatype-nexus-community/nancy@v1.0.51
+    - go install github.com/sonatype-nexus-community/nancy@v1.0.52
 
   script:
     - make audit
