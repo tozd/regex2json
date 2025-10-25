@@ -134,7 +134,7 @@ docker:
 
   before_script:
     - docker info
-    - echo "$CI_JOB_TOKEN" | docker login --username gitlab-ci-token --password-stdin "$CI_REGISTRY"
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
     - docker run --privileged --rm tonistiigi/binfmt --uninstall "qemu-*"
     - docker run --privileged --rm tonistiigi/binfmt:qemu-v9.2.2 --install arm64
 
@@ -196,7 +196,7 @@ push_branch:
 
   before_script:
     - docker info
-    - echo "$CI_JOB_TOKEN" | docker login --username gitlab-ci-token --password-stdin "$CI_REGISTRY"
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
 
   # TODO: Improve so that pulling is not necessary. See: https://gitlab.com/gitlab-org/gitlab/-/issues/15252
   script:
@@ -230,7 +230,7 @@ push_tag:
 
   before_script:
     - docker info
-    - echo "$CI_JOB_TOKEN" | docker login --username gitlab-ci-token --password-stdin "$CI_REGISTRY"
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
 
   # TODO: Improve so that pulling is not necessary. See: https://gitlab.com/gitlab-org/gitlab/-/issues/15252
   script:
