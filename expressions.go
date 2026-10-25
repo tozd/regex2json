@@ -82,6 +82,7 @@ var TimeLayouts = map[string]string{ //nolint: gochecknoglobals
 	"DayMonthYearTime":         "_2 Jan 2006 15:04:05",
 	"DayMonthYearTimeMilli":    "_2 Jan 2006 15:04:05.000",
 	"MonthDayTime":             "Jan _2 15:04:05",
+	"DateTimeMilliT":           "2006-01-02T15:04:05.000",
 }
 
 var (

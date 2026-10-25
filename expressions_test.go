@@ -52,6 +52,7 @@ var Tests = []struct { //nolint: gochecknoglobals
 	{[]ExpValue{{"foo___time__UnixDate__DateTime", "Fri Jun  9 22:21:17 MST 2023"}}, `{"foo":"2023-06-10 05:21:17"}`, []string{}},
 	{[]ExpValue{{"foo___time__UnixDate__DateTime__Europe_Ljubljana", "Fri Jun  9 22:21:17 CEST 2023"}}, `{"foo":"2023-06-09 22:21:17"}`, []string{}},
 	{[]ExpValue{{"foo___time__DateTime__UnixDate__UTC__Europe_Ljubljana", "2023-06-09 22:21:17"}}, `{"foo":"Fri Jun  9 20:21:17 UTC 2023"}`, []string{}},
+	{[]ExpValue{{"foo___time__DateTimeMilliT__RFC3339Milli__UTC__Europe_Ljubljana", "2023-06-09T22:21:17.123"}}, `{"foo":"2023-06-09T20:21:17.123Z"}`, []string{}},
 	{[]ExpValue{{"obj___json", `{"x":1,"y":"v"}`}}, `{"obj":{"x":1,"y":"v"}}`, []string{}},
 	{[]ExpValue{{"___json", `{"x":1,"y":"v"}`}}, `{"x":1,"y":"v"}`, []string{}},
 	{[]ExpValue{{"obj___json___optional", ``}}, ``, []string{}},
